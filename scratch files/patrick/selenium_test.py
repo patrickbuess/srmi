@@ -1,5 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
+import urllib.request
 import time
 import re
 
@@ -40,3 +42,37 @@ print(allUrls)
 print("First URL: "+initialUrl)
 print("Second URL: "+secondUrl)
 print("Nr of Pages = "+str(nrOfPages))
+
+urlList = []
+
+
+# GET URLS OF LISTINGS
+for i in range(0,2):
+    try:
+        page = urllib.request.urlopen(allUrls[i]) # connect to website
+    except:
+        print("An error occured.")
+
+    soup = BeautifulSoup(page, 'html.parser')
+
+    for a in soup.select('a.title'):
+        urlList.append("https://www.comparis.ch"+a['href'])
+
+
+print(urlList)
+
+addresses = []
+
+# GET INFOS ON LISTINGS
+for i in urlList:
+    try:
+        page = urllib.request.urlopen(i) # connect to website
+    except:
+        print("An error occured.")
+
+    soup = BeautifulSoup(page, 'html.parser')
+
+    for a in soup.select('div.item-price.large strong'):
+        addresses.append(a)
+
+print(addresses)

@@ -19,6 +19,7 @@ searchField.send_keys(Keys.ENTER)
 time.sleep(5)
 initialUrl = driver.current_url
 
+print(initialUrl)
 # FIND OUT HOW MANY PAGES THERE ARE
 nrOfPages = int(driver.find_element_by_css_selector("ul.pagination li:nth-last-child(2) a").get_attribute("innerHTML"))
 print("Nr of Pages = "+str(nrOfPages))
@@ -35,7 +36,7 @@ secondUrl = driver.current_url
 allUrls = [initialUrl, secondUrl]
 plainUrl = re.sub('&page=1', '', secondUrl)
 
-for i in range(2,nrOfPages):
+for i in range(2, nrOfPages):
     allUrls.append(plainUrl+"&page="+str(i))
 
 print(allUrls)
@@ -47,9 +48,9 @@ urlList = []
 
 
 # GET URLS OF LISTINGS
-for i in range(0,2):
+for i in range(0, 2):
     try:
-        page = urllib.request.urlopen(allUrls[i]) # connect to website
+        page = urllib.request.urlopen(allUrls[i])  # connect to website
     except:
         print("An error occured.")
 
@@ -66,7 +67,7 @@ addresses = []
 # GET INFOS ON LISTINGS
 for i in urlList:
     try:
-        page = urllib.request.urlopen(i) # connect to website
+        page = urllib.request.urlopen(i)  # connect to website
     except:
         print("An error occured.")
 

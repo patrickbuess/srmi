@@ -30,3 +30,18 @@ console.error: BroadcastService:
 
 1554484585459	Marionette	INFO	Stopped listening on port 63253
 1554484727110	Marionette	INFO	Stopped listening on port 63842
+1554671997346	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/gy/zfzssf615l51gqdqqxkhfy1m0000gn/T/rust_mozprofile.0PD4RVtKrvTJ"
+1554671998134	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1554671998134	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1554671998134	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1554671999746	Marionette	INFO	Listening on port 52570
+1554671999808	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:190:13
+
+1554673286914	Marionette	INFO	Stopped listening on port 52570

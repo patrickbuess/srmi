@@ -1,13 +1,12 @@
 from DBOperations import DBOperations
-import pymysql
+
 
 class testDB:
     def __init__(self, dbOperations=None):
         self.dbOperations = dbOperations
 
-
-    def insertTestTable(self,name):
-        if self.dbOperations == None:
+    def insertTestTable(self, name):
+        if self.dbOperations is None:
             self.dbOperations = DBOperations.getDB()
         self.dbOperations.getConnection()
         try:
@@ -20,8 +19,6 @@ class testDB:
             self.dbOperations.connection.commit()
             print("SUCCESS")
 
-
-
 # def nameInsert(name):
 #     try:
 #         with connection.cursor() as cursor:
@@ -32,6 +29,7 @@ class testDB:
 #
 #
 # nameInsert("Oslo")
+
 
 db = DBOperations("srmidb")
 test = testDB(db)

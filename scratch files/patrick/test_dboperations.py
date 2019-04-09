@@ -33,4 +33,4 @@ class testDB:
 
 db = DBOperations("srmidb")
 test = testDB(db)
-test.insertTestTable("Oslo 2")
+test.insertTestTable("Oslo 3")

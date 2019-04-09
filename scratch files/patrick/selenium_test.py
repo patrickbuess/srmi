@@ -48,7 +48,7 @@ urlList = []
 
 
 # GET URLS OF LISTINGS
-for i in range(0, 2):
+for i in range(0, 2):  # normally range(0, len(urlList))
     try:
         page = urllib.request.urlopen(allUrls[i])  # connect to website
     except:

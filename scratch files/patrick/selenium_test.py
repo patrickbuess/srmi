@@ -1,4 +1,6 @@
+
 from selenium import webdriver
+chrome_path = "C:\Users\Ruben\Documents\Python packages\chromedriver_win32\chromedriver.exe"
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import urllib.request
@@ -6,7 +8,7 @@ import time
 import re
 
 # OPEN FIREFOX TO NAVIGATE WEBSITE
-driver = webdriver.Firefox()
+driver = webdriver.chrome(chrome_path)
 driver.get("https://www.comparis.ch/immobilien/result")
 assert "Immobilien" in driver.title
 

@@ -1,14 +1,15 @@
-
 from selenium import webdriver
-chrome_path = r"C:\Users\Ruben\Documents\Python packages\chromedriver_win32\chromedriver.exe"
+chrome_path = r"C:\Users\Ruben\Documents\Python packages\chromedriver_win32.73\chromedriver.exe"
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import urllib.request
 import time
 import re
+import csv
+
 
 # OPEN Chrome TO NAVIGATE WEBSITE
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(chrome_path)
 driver.get("https://www.comparis.ch/immobilien/result")
 assert "Immobilien" in driver.title
 
@@ -18,7 +19,7 @@ searchField.send_keys("8000")
 searchField.send_keys(Keys.ENTER)
 
 # WAIT 5 SECONDS AND GET CURRENT URL
-time.sleep(5)
+time.sleep(0)
 initialUrl = driver.current_url
 
 print(initialUrl)
@@ -31,7 +32,7 @@ nextButton = driver.find_element_by_css_selector('.pagination-next a')
 nextButton.click()
 
 # GET URL OF SECOND PAGE
-time.sleep(5)
+time.sleep(0)
 secondUrl = driver.current_url
 
 # CREATE ALL REMAINING URLS
@@ -62,6 +63,8 @@ for i in range(0, 2):  # normally range(0, len(urlList))
         urlList.append("https://www.comparis.ch"+a['href'])
 
 
+
+
 print(urlList)
 
 addresses = []
@@ -79,3 +82,4 @@ for i in urlList:
         addresses.append(a)
 
 print(addresses)
+

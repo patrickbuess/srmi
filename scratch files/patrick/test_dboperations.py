@@ -27,10 +27,9 @@ class testDB:
 #     finally:
 #         connection.commit()
 #
-#
 # nameInsert("Oslo")
 
 
 db = DBOperations("srmidb")
 test = testDB(db)
-test.insertTestTable("Oslo 3")
+test.insertTestTable("Ruben Test 1")

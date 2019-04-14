@@ -78,9 +78,8 @@ for i in urlList:
 
     soup = BeautifulSoup(page, 'html.parser')
 
-    for a in soup.select('div.item-price.large strong'):
+    for a in soup.select('div.dt.label-text dd'):
         addresses.append(a)
 
 print(addresses)
 
-# //*[@id="gtm-tracking-container"]/div[4]/div[1]/dl/div[1]/dt

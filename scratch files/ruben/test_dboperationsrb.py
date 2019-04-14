@@ -1,23 +1,22 @@
-import DBOperationsrb
+from DBOperations import DBOperations
 
 
 class testDB:
-    def __init__(self, dbOperationsrb=None):
-        self.dbOperationsrb = dbOperationsrb
+    def __init__(self, dbOperations=None):
+        self.dbOperations = dbOperations
 
     def insertTestTable(self, name):
-        if self.dbOperationsrb is None:
-            self.dbOperationsrb = DBOperationsrb.getDB()
-        self.dbOperationsrb.getConnection()
+        if self.dbOperations is None:
+            self.dbOperations = DBOperations.getDB()
+        self.dbOperations.getConnection()
         try:
             # enter tinder credentials
-            with DBOperationsrb.connection.cursor() as cursor:
-                params = ['?' for i in list]
-                sql = "INSERT INTO `testTable`(name, col2,col3,col4) VALUES (%s)" % ','.join(params)
-                cursor.execute(sql, list)
+            with DBOperations.connection.cursor() as cursor:
+                sql = "INSERT INTO `testTable`(name) VALUES (%s)"
+                cursor.execute(sql, [name])
 
         finally:
-            self.dbOperationsrb.connection.commit()
+            self.dbOperations.connection.commit()
             print("SUCCESS")
 
 # def nameInsert(name):
@@ -31,6 +30,6 @@ class testDB:
 # nameInsert("Oslo")
 
 
-db = DBOperationsrb("srmidb")
+db = DBOperations("srmidb")
 test = testDB(db)
-test.insertTestTable("Ruben Test 1, 2,3,4")
+test.insertTestTable("Ruben Test 3")

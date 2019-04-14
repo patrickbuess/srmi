@@ -32,4 +32,4 @@ class testDB:
 
 db = DBOperations("srmidb")
 test = testDB(db)
-test.insertTestTable("Ruben Test 1")
+test.insertTestTable("Ruben Test 3")

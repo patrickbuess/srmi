@@ -1,6 +1,6 @@
 
 from selenium import webdriver
-chrome_path = "C:\Users\Ruben\Documents\Python packages\chromedriver_win32\chromedriver.exe"
+chrome_path = r"C:\Users\Ruben\Documents\Python packages\chromedriver_win32\chromedriver.exe"
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import urllib.request

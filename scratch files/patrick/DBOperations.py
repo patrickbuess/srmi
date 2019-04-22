@@ -1,5 +1,7 @@
 import pymysql
 
+# hpimport pymysql
+
 
 class DBOperations:
     def __init__(self, DB_NAME, DB_USER='kezenihi_srmidb', DB_PASSWORD='FJgc69L3', connection=None):

@@ -14,7 +14,6 @@ class testDB:
             with DBOperations.connection.cursor() as cursor:
                 sql = "INSERT INTO `testTable`(name) VALUES (%s)"
                 cursor.execute(sql, [name])
-
         finally:
             self.dbOperations.connection.commit()
             print("SUCCESS")

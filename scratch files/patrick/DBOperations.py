@@ -2,7 +2,7 @@ import pymysql
 
 
 class DBOperations:
-    def __init__(self, DB_NAME, DB_USER='srmidbuser', DB_PASSWORD='ykXo4q2pAKaPsj7Ag', connection=None):
+    def __init__(self, DB_NAME, DB_USER='kezenihi_srmidb', DB_PASSWORD='FJgc69L3', connection=None):
         self.DB_NAME = DB_NAME
         self.DB_USER = DB_USER
         self.DB_PASSWORD = DB_PASSWORD
@@ -17,7 +17,7 @@ class DBOperations:
     def openDBConnection(self):
         if not DBOperations.DB_Flag:
             DBOperations.connection = pymysql.connect(
-                                        host='80.74.128.5',
+                                        host='kezenihi.mysql.db.hostpoint.ch',
                                         user=self.DB_USER,
                                         password=self.DB_PASSWORD,
                                         db=self.DB_NAME,

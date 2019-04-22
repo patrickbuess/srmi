@@ -1,14 +1,79 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 import urllib.request
+import random
+from lxml.html import fromstring
+import requests
 import time
 import re
+import datetime
 
-# OPEN FIREFOX TO NAVIGATE WEBSITE
-driver = webdriver.Firefox()
+
+from DBOperations import DBOperations
+from helpclasses import UrlList
+
+# THIS CODE ITERATES THROUGH POSTAL CODES AND GETS URLS OF LISTINGS, STORES THEM IN A DATABASE
+
+
+# FUNCTION TO GET PROXY LIST
+def get_proxies():
+    url = 'https://free-proxy-list.net/'
+    response = requests.get(url)
+    parser = fromstring(response.text)
+    proxies = []
+    for i in parser.xpath('//tbody/tr'):
+        if i.xpath('.//td[7][contains(text(),"yes")]'):
+            # Grabbing IP and corresponding PORT
+            proxy = ":".join([i.xpath('.//td[1]/text()')[0], i.xpath('.//td[2]/text()')[0]])
+            proxies.append(proxy)
+    return proxies
+
+
+# GET PROXY LIST, NEEDED TO CHANGE PROXY FROM TIME TO TIME
+proxies = get_proxies()
+print(proxies)
+
+# GET FAKE USERAGENT VIA FAKE_USERAGENT PACKAGE
+ua = UserAgent()
+headers = ua.random
+
+# TEST PROXY
+url = 'https://httpbin.org/ip'
+
+proxyWorks = False
+print("START")
+while proxyWorks is False:
+    global proxy
+    print("Request")
+    proxy = random.choice(proxies)
+    try:
+        print("TRY")
+        response = requests.get(url, proxies={"http": proxy, "https": proxy})
+        proxyWorks = True
+        print(response.json())
+    except:
+        # Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work.
+        # We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url
+        print("Skipping. Connnection error")
+
+print("SUCCESS")
+print(proxy)
+
+
+# SET PROXY FOR SELENIUM
+proxy = Proxy({
+    'proxyType': ProxyType.MANUAL,
+    'httpProxy': proxy,
+    'ftpProxy': proxy,
+    'sslProxy': proxy,
+    'noProxy': ''  # set this value as desired
+    })
+
+driver = webdriver.Firefox(proxy=proxy)
 driver.get("https://www.comparis.ch/immobilien/result")
-assert "Immobilien" in driver.title
 
 # TYPE IN POSTAL CODE AND HIT ENTER
 searchField = driver.find_element_by_id("SearchParams_LocationSearchString")
@@ -39,15 +104,9 @@ plainUrl = re.sub('&page=1', '', secondUrl)
 for i in range(2, nrOfPages):
     allUrls.append(plainUrl+"&page="+str(i))
 
-print(allUrls)
-print("First URL: "+initialUrl)
-print("Second URL: "+secondUrl)
-print("Nr of Pages = "+str(nrOfPages))
-
-urlList = []
-
 
 # GET URLS OF LISTINGS
+urlListings = []
 for i in range(0, 2):  # normally range(0, len(urlList))
     try:
         page = urllib.request.urlopen(allUrls[i])  # connect to website
@@ -57,23 +116,43 @@ for i in range(0, 2):  # normally range(0, len(urlList))
     soup = BeautifulSoup(page, 'html.parser')
 
     for a in soup.select('a.title'):
-        urlList.append("https://www.comparis.ch"+a['href'])
+        urlListings.append("https://www.comparis.ch"+a['href'])
+
+print(urlListings)
 
 
-print(urlList)
+# CHECK WHETHER URLS ARE IN UrlList already
+checkedUrls = UrlList(DBOperations("kezenihi_srmidb"))
+allCheckedUrls = checkedUrls.getAllUrls()
+print(allCheckedUrls)
 
-addresses = []
+# REMOVE DOUBE ENTRIES
+validUrls = [x for x in urlListings if x not in allCheckedUrls]
+print("These are the valid URLS: ")
+print(*validUrls, sep = ", ")
 
-# GET INFOS ON LISTINGS
-for i in urlList:
-    try:
-        page = urllib.request.urlopen(i)  # connect to website
-    except:
-        print("An error occured.")
+# INSERT NEW URLS
+insertUrls = []
+d = datetime.datetime.today()
+for url in urlListings:
+    insertUrls.append((url, 0, d.strftime('%Y-%m-%d')))
 
-    soup = BeautifulSoup(page, 'html.parser')
+checkedUrls.insertNewUrls(insertUrls)
 
-    for a in soup.select('div.item-price.large strong'):
-        addresses.append(a)
 
-print(addresses)
+#
+# addresses = []
+#
+# # GET INFOS ON LISTINGS
+# for i in urlList:
+#     try:
+#         page = urllib.request.urlopen(i)  # connect to website
+#     except:
+#         print("An error occured.")
+#
+#     soup = BeautifulSoup(page, 'html.parser')
+#
+#     for a in soup.select('div.item-price.large strong'):
+#         addresses.append(a)
+#
+# print(addresses)

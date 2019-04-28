@@ -19,6 +19,7 @@ from classHelpClasses import *
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.pyplot
+import statistics
 
 class DBOperations:
    def __init__(self, DB_NAME, DB_USER='kezenihi_srmidb', DB_PASSWORD='FJgc69L3', connection=None):
@@ -57,6 +58,7 @@ class DBOperations:
            self.getConnection()
            return self
 
+#-------------------------------
 # Get average price of the postal code entered
 class avgPc:
    def __init__(self, dbOperations=None):
@@ -71,15 +73,19 @@ class avgPc:
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               sql = "SELECT avg({}) FROM listingDetails WHERE postalCode = {}".format('price', postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format('price', postalCode)
                cursor.execute(sql)
                list = cursor.fetchall()
+               numeric_types = [int, float, complex]
+               list = [x for x in list if type(x) in numeric_types]
+               #price = statistics.mean(list)
 
        finally:
            cursor.close()
            return list
 
 #Get the price of all the properties in the postal code area to make a distribution graph with it
+       # Get the price of all the properties in the postal code area to make a distribution graph with it
    def distrib(self):
        list = []
        postalCode = 1000
@@ -88,34 +94,26 @@ class avgPc:
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format('price', postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode = {} AND category NOT IN ('Parking space','Parking space')".format('price', postalCode)
+               print(sql)
                cursor.execute(sql)
                data = cursor.fetchall()
-               for element in data:
-                c = element['price']
-                list.append(c)
+               for p in data:
+                   if p['price'] is not None and p['price']<10000 and p['price']>100:
+                      c = p['price']
+                      list.append(c)
+
        finally:
            cursor.close()
+           plt.hist(list, color='#2d85cb', edgecolor='black', bins=int(180 / 5))
+           return (plt.show())
            return list
-           plt.hist(list, color='blue', edgecolor='black',
-                bins=int(180 / 5))
-           plt.show()
-
-   def updateLastChecked(self, postalCode, date):
-       if self.dbOperations is None:
-           self.dbOperations = DBOperations.getDB()
-       self.dbOperations.getConnection()
-       try:
-           with DBOperations.connection.cursor() as cursor:
-               sql = "UPDATE `postalCodes` SET lastChecked = '{}' WHERE postalCode = {}".format(date, postalCode)
-               cursor.execute(sql)
-       finally:
-           self.dbOperations.connection.commit()
-           print("updateLastChecked SUCCESS")
+           return len(list)
 
 postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
-postalCodesList = postalCodes.distrib()
-pc = postalCodesList
+postalCodes.distrib()
+postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+pc = postalCodes.average()
 print(pc)
 
 # --------------------------------------------------

@@ -72,7 +72,7 @@ while uncheckedUrls is True:
                     # c = requests.get(url[1], proxies=proxies, headers={'user-agent': headers}).content
                     c = None
                     try:
-                        c = requests.get(url[1], proxies=proxies, headers={'user-agent': headers}, timeout=60).content
+                        c = requests.get(url[1], proxies=proxies, headers={'user-agent': headers}, timeout=10).content
                     except Exception as e:
                         print("An error occured")
                         print(e)

@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.pyplot
 import statistics
+import numpy
 
 class DBOperations:
    def __init__(self, DB_NAME, DB_USER='kezenihi_srmidb', DB_PASSWORD='FJgc69L3', connection=None):
@@ -68,40 +69,49 @@ class avgPc:
    def average(self):
        list = []
        postalCode= 1000
+       varx = 'size'
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format('price', postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx, postalCode)
+               print(sql)
                cursor.execute(sql)
                list = cursor.fetchall()
-               numeric_types = [int, float, complex]
-               list = [x for x in list if type(x) in numeric_types]
-               #price = statistics.mean(list)
+               list = [x[varx] for x in list if x[varx] is not None]
+               priceavg = statistics.mean(list)
 
        finally:
            cursor.close()
-           return list
+           return priceavg
 
 #Get the price of all the properties in the postal code area to make a distribution graph with it
        # Get the price of all the properties in the postal code area to make a distribution graph with it
    def distrib(self):
        list = []
        postalCode = 1000
+       varx= 'price'
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               sql = "SELECT {} FROM listingDetails WHERE postalCode = {} AND category NOT IN ('Parking space','Parking space')".format('price', postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx, postalCode)
                print(sql)
                cursor.execute(sql)
                data = cursor.fetchall()
                for p in data:
-                   if p['price'] is not None and p['price']<10000 and p['price']>100:
-                      c = p['price']
+                   if p[varx] is not None and p[varx] not in [0,1]:
+                      c = p[varx]
                       list.append(c)
+               elements=numpy.array(list)
+               mean= numpy.mean(elements, axis=0)
+               sd=numpy.std(elements, axis=0)
+               listy = [x for x in list if (x > mean -2*sd)]
+               list = [x for x in listy if (x < mean + 2 * sd)]
+               print(max(list))
+               print(list)
 
        finally:
            cursor.close()
@@ -115,5 +125,6 @@ postalCodes.distrib()
 postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
 pc = postalCodes.average()
 print(pc)
+
 
 # --------------------------------------------------

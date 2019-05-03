@@ -22,6 +22,9 @@ import matplotlib.pyplot
 import statistics
 import numpy
 
+"""This file allows to draw some graphic conclusions about our data to give a visual overview of the Swiss rental market index
+to our customers."""
+
 class DBOperations:
    def __init__(self, DB_NAME, DB_USER='kezenihi_srmidb', DB_PASSWORD='FJgc69L3', connection=None):
        self.DB_NAME = DB_NAME
@@ -66,37 +69,54 @@ class avgPc:
        self.dbOperations = dbOperations
 
 #Get the average numerical value
-   def average(self):
+   def average(self, postalCode, varx, varx2):
        list = []
-       postalCode= 1000
-       varx = 'size'
+       postalCode= postalCode
+       varx = varx
+       varx2= varx2
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
                sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx, postalCode)
-               print(sql)
                cursor.execute(sql)
                list = cursor.fetchall()
                list = [x[varx] for x in list if x[varx] is not None]
+               #Calculate the variable average price for the zone
                priceavg = statistics.mean(list)
+               print(priceavg)
+
+               #Calculate the variable average surface (size) of the flats there in meter
+               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx2, postalCode)
+               cursor.execute(sql)
+               list = cursor.fetchall()
+               list2 = [x[varx2] for x in list if x[varx2] is not None]
+               averageSize = statistics.mean(list2)
+               print(averageSize)
+
+               #Calculate the average price per square meter in the postal code chosen
+               averageMeterPrice = priceavg/averageSize
+               print(averageMeterPrice)
 
        finally:
            cursor.close()
            return priceavg
+           return averageSize
+           return averageMeterPrice
 
-#Get the price of all the properties in the postal code area to make a distribution graph with it
-       # Get the price of all the properties in the postal code area to make a distribution graph with it
-   def distrib(self):
+
+#Get the price of all the properties in the postal code area to make a distribution graph with it.
+   def distrib(self, postalCode, varx):
        list = []
-       postalCode = 1000
-       varx= 'price'
+       postalCode = postalCode
+       varx= varx
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
+               #Select from sql
                sql = "SELECT {} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx, postalCode)
                print(sql)
                cursor.execute(sql)
@@ -105,13 +125,13 @@ class avgPc:
                    if p[varx] is not None and p[varx] not in [0,1]:
                       c = p[varx]
                       list.append(c)
+                #Take away the most extreme elements of the data collected, with the help of standard deviations (sd)
                elements=numpy.array(list)
                mean= numpy.mean(elements, axis=0)
                sd=numpy.std(elements, axis=0)
                listy = [x for x in list if (x > mean -2*sd)]
                list = [x for x in listy if (x < mean + 2 * sd)]
-               print(max(list))
-               print(list)
+
 
        finally:
            cursor.close()
@@ -120,11 +140,60 @@ class avgPc:
            return list
            return len(list)
 
-postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
-postalCodes.distrib()
-postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
-pc = postalCodes.average()
-print(pc)
+# Get the price and size of the flat in a certain postal code and plot it in a two dimensional graph.
+   def priceMeter(self, postalCode):
+       list = []
+       lista = []
+       postalCode = postalCode
+       varx = 'price'
+       varx2= 'size'
+       if self.dbOperations is None:
+           self.dbOperations = DBOperations.getDB()
+       self.dbOperations.getConnection()
+       #FIRST, collect the data from the varx (which can be defined as a variable for replicability of the code). This will correspond to one of the axis in our 2-dimensional chart.
+       try:
+           with DBOperations.connection.cursor() as cursor:
+               sql = "SELECT {},{} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
+                   varx, varx2, postalCode)
+               print(sql)
+               cursor.execute(sql)
+               data = cursor.fetchall()
+               print(data)
+               #Creating 2 lists which define the two axis of the chart
+               for p in data:
+                   if p[varx] is not None and p[varx] not in [0, 1] and p[varx2] is not None and p[varx2] not in [0, 1]:
+                       c = p[varx]
+                       list.append(c)
+                       d = p[varx2]
+                       lista.append(d)
+               print(lista)
+               elements = numpy.array(list)
+               mean = numpy.mean(elements, axis=0)
+               sd = numpy.std(elements, axis=0)
+               listy = [x for x in list if (x > mean - 2 * sd)]
+               axis1 = [x for x in listy if (x < mean + 2 * sd)]
+               print(axis1)
+               #axis1 is the first axis we define with the varx variable
 
+               elements = numpy.array(lista)
+               mean = numpy.mean(elements, axis=0)
+               sd = numpy.std(elements, axis=0)
+               listo = [x for x in lista if (x > mean - 2 * sd)]
+               axis2 = [x for x in listo if (x < mean + 2 * sd)]
+               print(axis2)
+               # axis2 is the first axis we define with the varx variable
+
+       finally:
+           cursor.close()
+           plt.scatter(axis1, axis2, s=10, color='#2d85cb')
+           return (plt.show())
+
+#postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+#postalCodes.distrib(1000, 'size')
+
+postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+
+pc = postalCodes.average(9000, 'price', 'size')
+#pc = postalCodes.priceMeter(1000)
 
 # --------------------------------------------------

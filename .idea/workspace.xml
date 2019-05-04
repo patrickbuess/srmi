@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0100e676-7feb-4c8f-8ca8-62a3f2abeff1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.1 Postal code zone price.py" beforeDir="false" afterPath="$PROJECT_DIR$/1.1 Postal code zone price.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/1.1 Postal code zone price.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="233" column="34" selection-start-line="233" selection-start-column="34" selection-end-line="233" selection-end-column="34" />
+            <state relative-caret-position="315">
+              <caret line="235" column="19" lean-forward="true" selection-start-line="235" selection-start-column="19" selection-end-line="235" selection-end-column="19" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -266,7 +265,14 @@
       <option name="project" value="LOCAL" />
       <updated>1556894163901</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Ruben Burdin draft">
+      <created>1556967154058</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1556967154058</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -363,8 +369,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/1.1 Postal code zone price.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="233" column="34" selection-start-line="233" selection-start-column="34" selection-end-line="233" selection-end-column="34" />
+        <state relative-caret-position="315">
+          <caret line="235" column="19" lean-forward="true" selection-start-line="235" selection-start-column="19" selection-end-line="235" selection-end-column="19" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>

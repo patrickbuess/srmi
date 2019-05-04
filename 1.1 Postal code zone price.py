@@ -18,9 +18,17 @@ from classListingObject import *
 from classHelpClasses import *
 import matplotlib.pyplot as plt
 import seaborn as sns
-import matplotlib.pyplot
+import matplotlib
 import statistics
 import numpy
+
+#For the map part
+import numpy as np
+import shapefile as shp
+import matplotlib.pyplot as plt
+# from mpl_toolkits.basemap import Basemap
+import pandas as pd
+import folium
 
 """This file allows to draw some graphic conclusions about our data to give a visual overview of the Swiss rental market index
 to our customers."""
@@ -191,9 +199,38 @@ class avgPc:
 #postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
 #postalCodes.distrib(1000, 'size')
 
-postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+#postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
 
-pc = postalCodes.average(9000, 'price', 'size')
+#pc = postalCodes.average(9000, 'price', 'size')
 #pc = postalCodes.priceMeter(1000)
 
 # --------------------------------------------------
+# In this section we create all the geographical map visualization that are necessary to satisfy our customers' needs.
+# For that, we use visuals of maps with colours.
+
+class map:
+    def __init__(self):
+        postalCodes=1000
+
+    def property(self):
+        kanton_map = folium.Map(location=[46.8, 8.33],
+                                tiles='Mapbox Bright', zoom_start=7)
+        return(kanton_map)
+        kanton_map.choropleth(geo_path='switzerland.geojson')
+        kanton_map.render()
+
+
+        #  df = []
+        # edit path
+
+        # locs = df[['lat', 'long']]
+        #loc_list = locs.values.tolist()
+
+        # To display all data use the following two lines, but, since your data has
+        # so many points, this process will be time-consuming.
+        #for point in range(0, len(loc_list)):
+            #folium.Marker(loc_list[point]).add_to(map_)
+
+kanton_map = folium.Map(location=[46.8, 8.33],
+                                tiles='Mapbox Bright', zoom_start=7)
+kanton_map.render()

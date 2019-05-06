@@ -14,6 +14,9 @@ from classHelpClasses import *
 
 uncheckedUrls = True
 
+# INITIALISE DATABASE CONNECTION
+urlsToScrape = UrlList(DBOperations("kezenihi_srmidb3"))
+
 while uncheckedUrls is True:
     try:
         # SET RANDOM PROXY AND FAKE USER AGENT
@@ -48,14 +51,19 @@ while uncheckedUrls is True:
         }
 
         # GET UNCHECKED URLS
-        urlsToScrape = UrlList(DBOperations("kezenihi_srmidb"))
         urlsList = urlsToScrape.getUrlsID()
+        urlsList = random.sample(urlsList, 10)
+
+        # STORE URLS IN PROGRESS, SO THEY CAN BE UNCHECKED AT THE END
+        urlsIDs = [item[0] for item in urlsList]
 
         # CHECK IF THERE ARE UNSCRAPED URLS AVAILABLE
         if (len(urlsList) == 0):
             uncheckedUrls = False
 
         else:
+            urlsToScrape.markInProgress(1, urlsIDs)
+
             try:
                 # SCRAPE
                 url = urlsList[0]
@@ -64,7 +72,7 @@ while uncheckedUrls is True:
                     checkedURL = False
                     print("--> Check URL: "+url[1])
                     # CREATE LISTING OBJECT
-                    listing = listingObject(DBOperations("kezenihi_srmidb"))
+                    listing = listingObject(DBOperations("kezenihi_srmidb3"))
                     listing.listingID = url[0]
                     listing.address = url[2]
                     listing.postalCode = url[3]
@@ -93,7 +101,7 @@ while uncheckedUrls is True:
                         # CONVERT ADDRESS VIA GOOGLE GEOLOCATION API
                         print("RUN GEOLOCATION API")
                         api_key = "AIzaSyDLpLwScHEHrVpIQOVjSj0RaCOwrkuViNI"
-                        query = listing.address+", "+str(listing.postalCode)
+                        query = listing.address+", "+str(listing.postalCode)+", Switzerland"
                         try:
                             googleurl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + query + '&lang=de&key=' + api_key
                             result = requests.get(googleurl)
@@ -221,15 +229,36 @@ while uncheckedUrls is True:
 
                             insertDetailsKeys = str(tuple(insertDetailsKeys)).replace("'", "")
 
+                            insertDistances = []
+                            insertDistancesKeys = []
+                            for k, v in vars(listing).items():
+                                if (k in ["listingID", "motorway", "shops", "publicTransport", "kindergarten", "primarySchool", "secondarySchool"]):
+                                    if (v is not None):
+                                        insertDistancesKeys.append(k)
+                                        insertDistances.append(v)
+                            len(insertDistancesKeys)
+                            if (len(insertDistancesKeys) > 1):
+                                insertDistancesKeys = str(tuple(insertDistancesKeys)).replace("'", "")
+
                             # INSERT listingDetails
                             listing.insertInfos(table="listingDetails",
                                                 columns=str(insertDetailsKeys),
                                                 listings=[tuple(insertDetails)])
 
-                            # INSERT listingAttributes
-                            listing.insertInfos(table="listingAttributes",
-                                                columns="(listingID, elevator, balconies, minergie, pets, childFriendly, cableTV, newBuilding, wheelchair, parkingIndoor, parkingOutdoor, veranda, pool)",
-                                                listings=[(listing.listingID, listing.elevator, listing.balconies, listing.minergie, listing.pets, listing.childFriendly, listing.cableTV, listing.newBuilding, listing.wheelchair, listing.parkingOutdoor, listing.parkingIndoor, listing.veranda, listing.pool)])
+                            # INSERT listingDistances
+                            if (len(insertDistancesKeys) > 1):
+                                listing.insertInfos(table="listingDistances",
+                                                    columns=str(insertDistancesKeys),
+                                                    listings=[tuple(insertDistances)])
+
+                            # CHECK IF ATTRIBUTES ARE AVAILABLE
+                            attributesAvailable = sum([listing.elevator, listing.balconies, listing.minergie, listing.pets, listing.childFriendly, listing.cableTV, listing.newBuilding, listing.wheelchair, listing.parkingOutdoor, listing.parkingIndoor, listing.veranda, listing.pool])
+
+                            if (attributesAvailable > 0):
+                                # INSERT listingAttributes
+                                listing.insertInfos(table="listingAttributes",
+                                                    columns="(listingID, elevator, balconies, minergie, pets, childFriendly, cableTV, newBuilding, wheelchair, parkingIndoor, parkingOutdoor, veranda, pool)",
+                                                    listings=[(listing.listingID, listing.elevator, listing.balconies, listing.minergie, listing.pets, listing.childFriendly, listing.cableTV, listing.newBuilding, listing.wheelchair, listing.parkingOutdoor, listing.parkingIndoor, listing.veranda, listing.pool)])
 
                             # INSERT listingDescription
                             if(descrCheck is True):
@@ -247,7 +276,10 @@ while uncheckedUrls is True:
                 print(traceback.format_exc())
                 print(e)
 
+        urlsToScrape.markInProgress(0, urlsIDs)
         print("\n\n")
 
-    except:
+    except Exception as e:
         print("SCRAPING ERROR \n\n")
+        print(traceback.format_exc())
+        print(e)

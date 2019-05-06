@@ -19,197 +19,209 @@ from classHelpClasses import *
 
 # THIS CODE ITERATES THROUGH POSTAL CODES AND GETS URLS OF LISTINGS, STORES THEM IN A DATABASE
 
+postalCodes = postalCodes(DBOperations("kezenihi_srmidb3"))
+uncheckedPostal = True
+while uncheckedPostal is True:
 
-# GET POSTALCODE
-postalCodes = postalCodes(DBOperations("kezenihi_srmidb"))
-postalCodesList = postalCodes.getAllPostalCodes()
-pc = postalCodesList[0]
+    # GET POSTALCODE
+    postalCodesList = postalCodes.getAllPostalCodes()
+    postalCodesList = random.sample(postalCodesList, 10)
+    pc = postalCodesList[0]
 
-# ITERATE THROUGH POSTAL CODES
-for pc in postalCodesList:
-    try:
-        print("SCRAPING FOR POSTAL CODE:")
-        print(pc)
+    # ITERATE THROUGH POSTAL CODES
 
-        # GET PROXY LIST, NEEDED TO CHANGE PROXY FROM TIME TO TIME
-        proxies = get_proxies()
+    if (len(postalCodesList) == 0):
+        uncheckedPostal = False
+    else:
+        postalCodes.markInProgress(1, postalCodesList)
 
-        # GET FAKE BROWSER USER AGENTS, CHANGED TOGETHER WITH PROXY
-        ua = UserAgent()
-        headers = ua.random
-
-        # TEST PROXY
-        url = 'https://httpbin.org/ip'
-
-        proxyWorks = False
-        print("GETTING PROXY")
-        while proxyWorks is False:
-            global proxy
-            print("Request")
-            proxy = random.choice(proxies)
+        for pc in postalCodesList:
             try:
-                print("TRY")
-                response = requests.get(url, proxies={"http": proxy, "https": proxy})
-                proxyWorks = True
-                print(response.json())
-            except:
-                # Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work.
-                # We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url
-                print("Skipping. Connnection error")
+                print("SCRAPING FOR POSTAL CODE:")
+                print(pc)
 
-        # SET PROXY FOR BEAUTIFULSOUP
-        proxies = {
-          "http": proxy,
-          "https": proxy,
-        }
 
-        # SET PROXY FOR SELENIUM
-        proxy = Proxy({
-            'proxyType': ProxyType.MANUAL,
-            'httpProxy': proxy,
-            'ftpProxy': proxy,
-            'sslProxy': proxy,
-            'noProxy': ''  # set this value as desired
-            })
+                # GET PROXY LIST, NEEDED TO CHANGE PROXY FROM TIME TO TIME
+                proxies = get_proxies()
 
-        # MAKE BROWSER HEADLESS
-        options = Options()
-        options.headless = True
+                # GET FAKE BROWSER USER AGENTS, CHANGED TOGETHER WITH PROXY
+                ua = UserAgent()
+                headers = ua.random
 
-        # MAKE BROWSER HEADLESS
-        # chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_argument('--headless')
-        # chrome_options.add_argument('--proxy-server={}'.format(proxy))
+                # TEST PROXY
+                url = 'https://httpbin.org/ip'
 
-        # OPEN HEADLESS BROWSER WINDOW AND VISIT INITIAL SEARCH PAGE OF COMPARIS
-        driver = webdriver.Firefox(options=options, proxy=proxy)
-        driver.get("https://www.comparis.ch/immobilien/result")
+                proxyWorks = False
+                print("GETTING PROXY")
+                while proxyWorks is False:
+                    global proxy
+                    print("Request")
+                    proxy = random.choice(proxies)
+                    try:
+                        print("TRY")
+                        response = requests.get(url, proxies={"http": proxy, "https": proxy})
+                        proxyWorks = True
+                        print(response.json())
+                    except:
+                        # Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work.
+                        # We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url
+                        print("Skipping. Connnection error")
 
-        # TYPE IN POSTAL CODE AND HIT ENTER
-        siteReached = False
-        try:
-            searchField = driver.find_element_by_id("SearchParams_LocationSearchString")
-            siteReached = True
-        except:
-            print("Site could not be reached")
+                # SET PROXY FOR BEAUTIFULSOUP
+                proxies = {
+                  "http": proxy,
+                  "https": proxy,
+                }
 
-        if (siteReached is True):
-            searchField.send_keys(str(pc))
-            searchField.send_keys(Keys.ENTER)
+                # SET PROXY FOR SELENIUM
+                proxy = Proxy({
+                    'proxyType': ProxyType.MANUAL,
+                    'httpProxy': proxy,
+                    'ftpProxy': proxy,
+                    'sslProxy': proxy,
+                    'noProxy': ''  # set this value as desired
+                    })
 
-            # WAIT 5 SECONDS AND GET CURRENT URL
-            time.sleep(5)
-            initialUrl = driver.current_url
+                # MAKE BROWSER HEADLESS
+                options = Options()
+                options.headless = True
 
-            # FIND OUT HOW MANY PAGES THERE ARE
-            nrOfPages = None
-            try:
-                nrOfPages = int(driver.find_element_by_css_selector("ul.pagination li:nth-last-child(2) a").get_attribute("innerHTML"))
-                print("Number of Pages: "+str(nrOfPages))
-            except Exception as e:
-                print("No pages found")
-                print(e)
+                # MAKE BROWSER HEADLESS
+                # chrome_options = webdriver.ChromeOptions()
+                # chrome_options.add_argument('--headless')
+                # chrome_options.add_argument('--proxy-server={}'.format(proxy))
 
-            # IF NO PAGES ARE EXISTING ONLY SCRAPE THE URLS FROM THE INITIAL PAGE
-            if (nrOfPages is not None):
-                # PRESS PAGINATION NEXT BUTTON (NECESSARY TO GET THE SECOND PAGE URL, WHICH CAN BE USED TO GENERATE ALL REMAINING URLS)
-                nextButton = driver.find_element_by_css_selector('.pagination-next a')
-                nextButton.click()
+                # OPEN HEADLESS BROWSER WINDOW AND VISIT INITIAL SEARCH PAGE OF COMPARIS
+                driver = webdriver.Firefox(options=options, proxy=proxy, service_log_path='/dev/null')
+                driver.get("https://www.comparis.ch/immobilien/result")
 
-                # GET URL OF SECOND PAGE
-                time.sleep(5)
-                secondUrl = driver.current_url
-
-                # CREATE ALL REMAINING URLS
-                allUrls = [initialUrl, secondUrl]
-                plainUrl = re.sub('&page=1', '', secondUrl)
-
-                for i in range(2, nrOfPages):
-                    allUrls.append(plainUrl+"&page="+str(i))
-
-            else:
-                allUrls = [initialUrl]  # IF NO PAGINATION EXISTING
-
-            # CLOSE HEADLESS BROWSER WINDOW
-            driver.close()
-            driver.quit()
-
-            # GET URLS OF LISTINGS
-            urlListings = []
-            checkSuccess = False
-
-            # SET COUNTER FOR CONSOLE OUTPUT
-            counter = 1
-
-            # ITERATE THROUGH ALL URLS AND SCRAPE LISTING URLS FROM THERE
-            for i in allUrls:
-
-                # VISIT URL, GET SOURCE CODE
+                # TYPE IN POSTAL CODE AND HIT ENTER
+                siteReached = False
                 try:
-                    page = None
-                    print("Scrape listing URLs for Base URL: "+str(counter))
-                    page = requests.get(i, proxies=proxies, headers={'user-agent': headers}, timeout=60).content  # connect to website
+                    searchField = driver.find_element_by_id("SearchParams_LocationSearchString")
+                    siteReached = True
                 except:
-                    print("An error occured.")
+                    print("Site could not be reached")
 
-                # IF REQUEST WAS SUCCESSFUL SCRAPE THROUGH SOURCE CODE
-                if(page is not None):
-                    soup = BeautifulSoup(page, 'html.parser')
-                    d = datetime.datetime.today()
+                if (siteReached is True):
+                    searchField.send_keys(str(pc))
+                    searchField.send_keys(Keys.ENTER)
 
-                    # SET VAR TO TRUE TO INDICATE THAT THIS POSTAL CODE CAN BE MARKED AS SCRAPED WITH A CURRENT DATE
-                    checkSuccess = True
-                    print("Check was successful")
+                    # WAIT 5 SECONDS AND GET CURRENT URL
+                    time.sleep(5)
+                    initialUrl = driver.current_url
 
-                    # ITERATE THROUGH DIVS CONTAINING THE ADDRESS, POSTAL CODE AND URL
-                    # WE SCRAPE THE POSTAL CODE INITIALLY HERE, BECAUSE IT CAN BE EASIER DISTINGUISHED BETWEEN STREET AND POSTAL CODE
-                    for a in soup.select('div.content-column.columns'):
-                        if (len(a.select('a.title')) > 0):
-                            url = a.select('a.title')[0]['href']
-                            print("--> Found URL: "+url)
-                            if (len(a.select('span.street')) > 0):
-                                street = a.select('span.street')[0].string
-                            else:
-                                street = 0
-                            if (len(a.select('address')) > 0):
-                                postal = str(a.select('address')[0].text).strip()
-                                postal = re.findall("\d{4}", postal)
-                                postal = postal[0]
-                            else:
-                                postal = 0
+                    # FIND OUT HOW MANY PAGES THERE ARE
+                    nrOfPages = None
+                    try:
+                        nrOfPages = int(driver.find_element_by_css_selector("ul.pagination li:nth-last-child(2) a").get_attribute("innerHTML"))
+                        print("Number of Pages: "+str(nrOfPages))
+                    except Exception as e:
+                        print("No pages found")
+                        print(e)
 
-                            # APPEND FOUND URLS TO LIST UF URLS
-                            urlListings.append(("https://en.comparis.ch"+url, street, postal, 0, d.strftime('%Y-%m-%d')))
+                    # IF NO PAGES ARE EXISTING ONLY SCRAPE THE URLS FROM THE INITIAL PAGE
+                    if (nrOfPages is not None):
+                        # PRESS PAGINATION NEXT BUTTON (NECESSARY TO GET THE SECOND PAGE URL, WHICH CAN BE USED TO GENERATE ALL REMAINING URLS)
+                        nextButton = driver.find_element_by_css_selector('.pagination-next a')
+                        nextButton.click()
 
-                counter = counter+1
+                        # GET URL OF SECOND PAGE
+                        time.sleep(5)
+                        secondUrl = driver.current_url
 
-                print("Appended, length of URL list: "+str(len(urlListings)))
+                        # CREATE ALL REMAINING URLS
+                        allUrls = [initialUrl, secondUrl]
+                        plainUrl = re.sub('&page=1', '', secondUrl)
 
-            # CHECK WHETHER URLS ARE IN UrlList already
-            checkedUrls = UrlList(DBOperations("kezenihi_srmidb"))
-            allCheckedUrls = checkedUrls.getAllUrls()
+                        for i in range(2, nrOfPages):
+                            allUrls.append(plainUrl+"&page="+str(i))
 
-            # REMOVE DOUBE ENTRIES
-            validUrls = [x for x in urlListings if x[0] not in allCheckedUrls]
+                    else:
+                        allUrls = [initialUrl]  # IF NO PAGINATION EXISTING
 
-            # IF VALID URLS ARE REMAINING, INSERT THEM INTO listingURL
-            if (len(validUrls) > 0):
-                # INSERT NEW URLS INTO listingURL
-                print("Update listingURL table")
-                checkedUrls.insertNewUrls(validUrls)
-            else:
-                print("No new URLS added")
+                    # CLOSE HEADLESS BROWSER WINDOW
+                    driver.close()
+                    driver.quit()
 
-            # UPDATE postalCodes TABLE WITH NEW DATE
-            if (checkSuccess is True):
-                print("Update postalCodes table")
-                d = datetime.datetime.today()
-                postalCodes.updateLastChecked(postalCode=pc, date=d.strftime('%Y-%m-%d'))
+                    # GET URLS OF LISTINGS
+                    urlListings = []
+                    checkSuccess = False
 
-        print("\n\n")
+                    # SET COUNTER FOR CONSOLE OUTPUT
+                    counter = 1
 
-    except Exception as e:
-        print("THIS POSTAL CODE DID NOT RUN THROUGH")
-        print(traceback.format_exc())
-        print(e)
-        print("\n\n")
+                    # ITERATE THROUGH ALL URLS AND SCRAPE LISTING URLS FROM THERE
+                    for i in allUrls:
+
+                        # VISIT URL, GET SOURCE CODE
+                        try:
+                            page = None
+                            print("Scrape listing URLs for Base URL: "+str(counter))
+                            page = requests.get(i, proxies=proxies, headers={'user-agent': headers}, timeout=60).content  # connect to website
+                        except:
+                            print("An error occured.")
+
+                        # IF REQUEST WAS SUCCESSFUL SCRAPE THROUGH SOURCE CODE
+                        if(page is not None):
+                            soup = BeautifulSoup(page, 'html.parser')
+                            d = datetime.datetime.today()
+
+                            # SET VAR TO TRUE TO INDICATE THAT THIS POSTAL CODE CAN BE MARKED AS SCRAPED WITH A CURRENT DATE
+                            checkSuccess = True
+                            print("Check was successful")
+
+                            # ITERATE THROUGH DIVS CONTAINING THE ADDRESS, POSTAL CODE AND URL
+                            # WE SCRAPE THE POSTAL CODE INITIALLY HERE, BECAUSE IT CAN BE EASIER DISTINGUISHED BETWEEN STREET AND POSTAL CODE
+                            for a in soup.select('div.content-column.columns'):
+                                if (len(a.select('a.title')) > 0):
+                                    url = a.select('a.title')[0]['href']
+                                    print("--> Found URL: "+url)
+                                    if (len(a.select('span.street')) > 0):
+                                        street = a.select('span.street')[0].string
+                                    else:
+                                        street = 0
+                                    if (len(a.select('address')) > 0):
+                                        postal = str(a.select('address')[0].text).strip()
+                                        postal = re.findall("\d{4}", postal)
+                                        postal = postal[0]
+                                    else:
+                                        postal = 0
+
+                                    # APPEND FOUND URLS TO LIST UF URLS
+                                    urlListings.append(("https://en.comparis.ch"+url, street, postal, 0, d.strftime('%Y-%m-%d'), 0))
+
+                        counter = counter+1
+
+                        print("Appended, length of URL list: "+str(len(urlListings)))
+
+                    # CHECK WHETHER URLS ARE IN UrlList already
+                    checkedUrls = UrlList(DBOperations("kezenihi_srmidb3"))
+                    allCheckedUrls = checkedUrls.getAllUrls()
+
+                    # REMOVE DOUBE ENTRIES
+                    validUrls = [x for x in urlListings if x[0] not in allCheckedUrls]
+
+                    # IF VALID URLS ARE REMAINING, INSERT THEM INTO listingURL
+                    if (len(validUrls) > 0):
+                        # INSERT NEW URLS INTO listingURL
+                        print("Update listingURL table")
+                        checkedUrls.insertNewUrls(validUrls)
+                    else:
+                        print("No new URLS added")
+
+                    # UPDATE postalCodes TABLE WITH NEW DATE
+                    if (checkSuccess is True):
+                        print("Update postalCodes table")
+                        d = datetime.datetime.today()
+                        postalCodes.updateLastChecked(postalCode=pc, date=d.strftime('%Y-%m-%d'))
+
+                print("\n\n")
+
+            except Exception as e:
+                print("THIS POSTAL CODE DID NOT RUN THROUGH")
+                print(traceback.format_exc())
+                print(e)
+                print("\n\n")
+
+        postalCodes.markInProgress(0, postalCodesList)

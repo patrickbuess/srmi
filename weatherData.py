@@ -1,4 +1,4 @@
-from DBconnection import *
+from DBOperations import *
 import unidecode
 import requests
 from collections import OrderedDict

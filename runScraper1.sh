@@ -1,4 +1,5 @@
 cd ~/python_projects
 source srmi-env/bin/activate
 cd srmi-env/
-python3 moduleScraperPart2.py
+chmod +x moduleScraperPart1.py
+nohup python3 moduleScraperPart1.py </dev/null >/dev/null 2>&1 &

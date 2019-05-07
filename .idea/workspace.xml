@@ -16,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/1.1 Postal code zone price.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1675">
-              <caret line="339" lean-forward="true" selection-start-line="339" selection-end-line="339" />
+            <state relative-caret-position="179">
+              <caret line="321" column="28" selection-start-line="321" selection-start-column="28" selection-end-line="321" selection-end-column="28" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -71,6 +71,8 @@
       <list>
         <option value="$PROJECT_DIR$/scratch files/ruben/1.1 Postal code zone price.py" />
         <option value="$PROJECT_DIR$/classListingObject.py" />
+        <option value="$USER_HOME$/Downloads/hexbin_marginals.py" />
+        <option value="$PROJECT_DIR$/scratch files/test to be deleted.py" />
         <option value="$PROJECT_DIR$/1.1 Postal code zone price.py" />
       </list>
     </option>
@@ -96,6 +98,11 @@
               <item name="srmi2" type="b2602c69:ProjectViewProjectNode" />
               <item name="srmi2" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="srmi2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="srmi2" type="462c0819:PsiDirectoryNode" />
+              <item name="scratch files" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -103,7 +110,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/scratch files/test to be deleted.py" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -126,7 +133,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.1.1 Postal code zone price (1)">
+  <component name="RunManager" selected="Python.1.1 Postal code zone price">
     <configuration name="1.1 Postal code zone price (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="srmi" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -135,11 +142,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scratch files" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/1.1 Postal code zone price.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scratch files/test to be deleted.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -211,10 +218,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.1.1 Postal code zone price" />
+      <item itemvalue="Python.1.1 Postal code zone price (1)" />
+      <item itemvalue="Python.classDBOperations" />
+      <item itemvalue="Python.classHelpClasses" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.1.1 Postal code zone price (1)" />
         <item itemvalue="Python.1.1 Postal code zone price" />
+        <item itemvalue="Python.1.1 Postal code zone price (1)" />
         <item itemvalue="Python.classDBOperations" />
         <item itemvalue="Python.classHelpClasses" />
       </list>
@@ -287,7 +300,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557093811974</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Ruben Burdin draft">
+      <created>1557220585507</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1557220585508</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -382,10 +402,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Downloads/hexbin_marginals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="15" />
+          <folding>
+            <element signature="e#105#123#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scratch files/test to be deleted.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="9" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/1.1 Postal code zone price.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1675">
-          <caret line="339" lean-forward="true" selection-start-line="339" selection-end-line="339" />
+        <state relative-caret-position="179">
+          <caret line="321" column="28" selection-start-line="321" selection-start-column="28" selection-end-line="321" selection-end-column="28" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>

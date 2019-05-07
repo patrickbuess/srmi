@@ -76,7 +76,7 @@ class avgPc:
    def __init__(self, dbOperations=None):
        self.dbOperations = dbOperations
 
-#Get the average numerical value
+#Get the average numerical value for the price of properties in the postal code area entered by the customer
    def average(self, postalCode, varx, varx2):
        list = []
        postalCode= postalCode
@@ -91,11 +91,12 @@ class avgPc:
                cursor.execute(sql)
                list = cursor.fetchall()
                list = [x[varx] for x in list if x[varx] is not None]
+
                #Calculate the variable average price for the zone
                priceavg = statistics.mean(list)
                print(priceavg)
 
-               #Calculate the variable average surface (size) of the flats there in meter
+               #Calculate the variable 'average surface' (size) of the flats there in meter
                sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx2, postalCode)
                cursor.execute(sql)
                list = cursor.fetchall()
@@ -158,8 +159,10 @@ class avgPc:
 
        finally:
            cursor.close()
+
+           #Plot the prepared data
            plt.hist(list, color='#2d85cb', edgecolor='black', bins=int(180 / 5))
-           plt.title("Distribution of " + varx+ " at "+postalCode)
+           plt.title("Distribution of " + varx+ " at "+str(postalCode))
            plt.xlabel(varx)
            plt.ylabel("Number of properties for such"+varx)
            return (plt.show())
@@ -170,10 +173,12 @@ class avgPc:
    def priceMeter(self, postalCode):
        list = []
        lista = []
+       siza= []
        postalCodeList = []
        postalCode = postalCode
        varx = 'price'
        varx2= 'size'
+       varx3= 'rooms'
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
@@ -195,8 +200,8 @@ class avgPc:
                if len(postalCodeList) is 1:
                    # Select now from the Database the desired data in the case there is only one postal code for the targeted city (because the SQL query syntax changes if there are one or many)
                    postalCodeList = postalCode
-                   sql = "SELECT {},{} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, postalCodeList)
+                   sql = "SELECT {},{},{} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
+                       varx, varx2, varx3, postalCodeList)
                    cursor.execute(sql)
                    data = cursor.fetchall()
 
@@ -204,8 +209,8 @@ class avgPc:
                    #Select now from the Database the desired data
                    # Transform the list of postal codes in tuples so that the next SQL query is ready to work
                    postalCodeList = tuple(postalCodeList)
-                   sql = "SELECT {},{} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, postalCodeList)
+                   sql = "SELECT {},{},{} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
+                       varx, varx2, varx3, postalCodeList)
                    cursor.execute(sql)
                    data = cursor.fetchall()
 
@@ -216,11 +221,14 @@ class avgPc:
                        list.append(c)
                        d = p[varx2]
                        lista.append(d)
+                       e = p[varx3]
+                       siza.append(e)
                print(len(list))
 
                #Create the 2 list that we will fill with some extreme-values-filtered data so that our plots are representing the reality of the average market and not the extreme cases (that we want to exclude here from our data)
                axis1 = []
                axis2 = []
+               size = []
                #Defining the standard deviation for both sets of data we have at hand (sd for axis1 and sda for axis2)
                elements = numpy.array(list)
                mean = numpy.mean(elements, axis=0)
@@ -237,109 +245,81 @@ class avgPc:
                        if lista[x]> (mean - 2 * sda) and lista[x]< mean + 2 * sda:
                            axis1.append(list[x])
                            axis2.append(lista[x])
+                           if siza[x] is None:
+                               size.append(10)
+                           else:
+                               size.append(siza[x]*10)
                # axis1 is the first axis we define with the varx variable
                # axis2 is the first axis we define with the varx variable
+               # size is the size of the data points in the graph
                print(len(axis1))
 
        finally:
            cursor.close()
-           plt.scatter(axis1, axis2, s=10, color='#2d85cb')
+
+           #Plot the prepared data
+           plt.scatter(axis1, axis2, s=size, color='#2d85cb')
            plt.title(varx + " in relation to " + varx2+" at "+ str(postalCode))
            plt.xlabel(varx)
            plt.ylabel(varx2)
 
            return (plt.show())
+
 
    def weather(self,postalCode):
-       list = []
-       postalCodeList = []
+       axis1 = []
+       axis2 = []
        postalCode = postalCode
-       varx = 'price'
+
+       #Define the columns that contains the data for each of the Max and Min temperatures in °C for the postal code entered by the customer.
+       maxTemp = ['maxtempJan',  'maxtempFeb',  'maxtempMar',  'maxtempApr',  'maxtempMai', 'maxtempJun', 'maxtempJul', 'maxtempAug', 'maxtempSep', 'maxtempOct', 'maxtempNov', 'maxtempDec']
+       minTemp = ['mintempJan', 'mintempFeb', 'mintempMar', 'mintempApr', 'mintempMai', 'mintempJun', 'mintempJul', 'mintempAug','mintempSep', 'mintempOct', 'mintempNov', 'mintempDec']
+
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
-       #FIRST, collect the data from the varx (which can be defined as a variable for replicability of the code). This will correspond to one of the axis in our 2-dimensional chart.
+
        try:
            with DBOperations.connection.cursor() as cursor:
                # Select from sql the list of postal codes that are from the same city of the one we would like to look at, because some big cities are divided in more postal codes while being the same city.
-               sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(
-                   postalCode)
+               sql = "SELECT * FROM `weatherData` WHERE postalCode = {}".format(postalCode)
                cursor.execute(sql)
                data = cursor.fetchall()
                for p in data:
-                   if p['postalCode'] is not None:
-                       c = p['postalCode']
-                       postalCodeList.append(c)
-               print(postalCodeList)
-
-               #Determine if there are one or many postal codes that are in the same city or the city targeted by the user has only 1 postal code attributed.
-               if len(postalCodeList) is 1:
-                   # Select now from the Database the desired data in the case there is only one postal code for the targeted city (because the SQL query syntax changes if there are one or many)
-                   postalCodeList = postalCode
-                   sql = "SELECT {},{} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, postalCodeList)
-                   cursor.execute(sql)
-                   data = cursor.fetchall()
-
-               else:
-                   #Select now from the Database the desired data
-                   # Transform the list of postal codes in tuples so that the next SQL query is ready to work
-                   postalCodeList = tuple(postalCodeList)
-                   sql = "SELECT {},{} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, postalCodeList)
-                   cursor.execute(sql)
-                   data = cursor.fetchall()
-
-               #Creating 2 lists which define the two axis of the chart
-               for p in data:
-                   if p[varx] is not None and p[varx] not in [0, 1] and p[varx2] is not None and p[varx2] not in [0, 1]:
-                       c = p[varx]
-                       list.append(c)
-                       d = p[varx2]
-                       lista.append(d)
-               print(len(list))
-
-               #Create the 2 list that we will fill with some extreme-values-filtered data so that our plots are representing the reality of the average market and not the extreme cases (that we want to exclude here from our data)
-               axis1 = []
-               axis2 = []
-               #Defining the standard deviation for both sets of data we have at hand (sd for axis1 and sda for axis2)
-               elements = numpy.array(list)
-               mean = numpy.mean(elements, axis=0)
-               sd = numpy.std(elements, axis=0)
-
-               elements = numpy.array(lista)
-               mean = numpy.mean(elements, axis=0)
-               sda = numpy.std(elements, axis=0)
-
-               # Let's define the 2 axis and filter the extreme values from the axis1 and then the extreme values from the axis 2 to obtain a bidimentional coherent plot.
-               #Here we want to exclude outlyers from the dataset by using standard deviations (2 standard deviations here)
-               for x in range(1,len(list)):
-                   if list[x]> (mean - 2 * sd) and list[x]< mean + 2 * sd:
-                       if lista[x]> (mean - 2 * sda) and lista[x]< mean + 2 * sda:
-                           axis1.append(list[x])
-                           axis2.append(lista[x])
-               # axis1 is the first axis we define with the varx variable
-               # axis2 is the first axis we define with the varx variable
-               print(len(axis1))
+                   for x in maxTemp:
+                       if p[x] is not None:
+                           c = p[x]
+                           axis1.append(c)
+                   for x in minTemp:
+                       if p[x] is not None:
+                           c = p[x]
+                           axis2.append(c)
+               print(axis1)
+               print(axis2)
+               # Axis 1 being the name of the max temperatures for the postal code in the period of 1 year (12 values, 1 per month
+               #  Axis 2 being the name of the min temperatures for the postal code in the period of 1 year (12 values, 1 per month))
 
        finally:
            cursor.close()
-           plt.scatter(axis1, axis2, s=10, color='#2d85cb')
-           plt.title(varx + " in relation to " + varx2+" at "+ str(postalCode))
-           plt.xlabel(varx)
-           plt.ylabel(varx2)
+
+           #Plot the prepared data
+           plt.plot(axis1, label= 'Max temperatures', color= 'r')
+           plt.plot(axis2, label= 'Min temperatures', color='#2d85cb')
+           plt.title('Yearly temperature per month at ' + str(postalCode))
+           plt.xlabel('Month')
+           plt.ylabel('Temperature in °C')
+           plt.legend()
+           plt.axhline(y=0, color='k')
 
            return (plt.show())
 
 
 
-#postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
 #postalCodes.distrib(1000, 'size')
 
-postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
-
 #pc = postalCodes.average(9000, 'price', 'size')
-pc = postalCodes.priceMeter(1008)
+pc = postalCodes.priceMeter(1000)
 
 # --------------------------------------------------
 # In this section we create all the geographical map visualization that are necessary to satisfy our customers' needs.

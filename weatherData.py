@@ -16,6 +16,7 @@ class postalCodes:
     def __init__(self, dbOperations=None):
         self.dbOperations = dbOperations
 
+    # creates a dict with all cities and their postalcodes    
     def getAllPostalCodes(self):
         if self.dbOperations is None:
             self.dbOperations = DBOperations().getDB()

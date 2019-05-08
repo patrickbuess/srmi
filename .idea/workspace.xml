@@ -214,8 +214,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.1.1 Postal code zone price (1)" />
       <item itemvalue="Python.1.1 Postal code zone price" />
+      <item itemvalue="Python.1.1 Postal code zone price (1)" />
       <item itemvalue="Python.classDBOperations" />
       <item itemvalue="Python.classHelpClasses" />
     </list>

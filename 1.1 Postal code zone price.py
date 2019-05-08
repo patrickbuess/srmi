@@ -94,7 +94,6 @@ class avgPc:
 
                #Calculate the variable average price for the zone
                priceavg = statistics.mean(list)
-               print(priceavg)
 
                #Calculate the variable 'average surface' (size) of the flats there in meter
                sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx2, postalCode)
@@ -102,17 +101,15 @@ class avgPc:
                list = cursor.fetchall()
                list2 = [x[varx2] for x in list if x[varx2] is not None]
                averageSize = statistics.mean(list2)
-               print(averageSize)
 
                #Calculate the average price per square meter in the postal code chosen
                averageMeterPrice = priceavg/averageSize
-               print(averageMeterPrice)
 
        finally:
            cursor.close()
-           return priceavg
-           return averageSize
-           return averageMeterPrice
+           print('Average price at postal code '+str(postalCode)+': '+str(priceavg))
+           print('Average size at postal code ' + str(postalCode) + ': ' + str(averageSize))
+           print('Average square meter price at postal code ' + str(postalCode) + ': ' + str(averageMeterPrice))
 
 
 #Get the price of all the properties in the postal code area to make a distribution graph with it.
@@ -164,7 +161,7 @@ class avgPc:
            plt.hist(list, color='#2d85cb', edgecolor='black', bins=int(180 / 5))
            plt.title("Distribution of " + varx+ " at "+str(postalCode))
            plt.xlabel(varx)
-           plt.ylabel("Number of properties for such"+varx)
+           plt.ylabel("Number of properties for such "+varx)
            return (plt.show())
            return list
            return len(list)
@@ -259,7 +256,8 @@ class avgPc:
 
            #Plot the prepared data
            plt.scatter(axis1, axis2, s=size, color='#2d85cb')
-           plt.title(varx + " in relation to " + varx2+" at "+ str(postalCode))
+           plt.suptitle(varx + " in relation to " + varx2+" at "+ str(postalCode))
+           plt.title("The size of the points is the number of "+str(varx3), fontsize= 9)
            plt.xlabel(varx)
            plt.ylabel(varx2)
 
@@ -294,8 +292,6 @@ class avgPc:
                        if p[x] is not None:
                            c = p[x]
                            axis2.append(c)
-               print(axis1)
-               print(axis2)
                # Axis 1 being the name of the max temperatures for the postal code in the period of 1 year (12 values, 1 per month
                #  Axis 2 being the name of the min temperatures for the postal code in the period of 1 year (12 values, 1 per month))
 
@@ -315,10 +311,10 @@ class avgPc:
 
 
 
-postalCodes = avgPc(DBOperations("kezenihi_srmidb"))
+postalCodes = avgPc(DBOperations("kezenihi_srmidb3"))
 #postalCodes.distrib(1000, 'size')
 
-#pc = postalCodes.average(9000, 'price', 'size')
+#pc = postalCodes.price(9000, 'price', 'size')
 pc = postalCodes.priceMeter(1000)
 
 # --------------------------------------------------

@@ -71,6 +71,43 @@ class DBOperations:
            return self
 
 #-------------------------------
+
+#Get the name of the city for each postal code (in order to then format charts and add dynamic titles to objects' output).
+class city:
+    def __init__(self, dbOperations = None):
+        self.dbOperations = dbOperations
+    def cityName(self, postalCode):
+        if self.dbOperations is None:
+            self.dbOperations = DBOperations.getDB()
+        self.dbOperations.getConnection()
+        postalCodeList = []
+
+        try:
+            with DBOperations.connection.cursor() as cursor:
+                sql = "SELECT city FROM `postalCodes` WHERE postalCode = {}".format(postalCode)
+                cursor.execute(sql)
+                list = cursor.fetchall()
+                cityName = [x['city'] for x in list if x['city'] is not None]
+
+                # Select from sql the list of postal codes that are from the same city of the one we would like to look at, because some big cities are divided in more postal codes while being the same city.
+                sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(
+                    postalCode)
+                cursor.execute(sql)
+                data = cursor.fetchall()
+                for p in data:
+                    if p['postalCode'] is not None:
+                        c = p['postalCode']
+                        postalCodeList.append(c)
+                citydict= dict({'cityName':cityName ,'postalCodeList':postalCodeList})
+
+        finally:
+            return cityName[0]
+            return postalCodeList
+            return citydict
+        #cityName being the name of the city attached to the postal code entered
+        #postalCodeList being the list of postal codes included in the same city as the city of the entered postal code.
+        #citydict is a dictionary including both cityName and postalCodeList, in this order.
+
 # Get average price of the postal code entered
 class avgPc:
    def __init__(self, dbOperations=None):
@@ -105,11 +142,21 @@ class avgPc:
                #Calculate the average price per square meter in the postal code chosen
                averageMeterPrice = priceavg/averageSize
 
+               #Get the city name to format a nice name of the string or Chart
+               townName= city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+
        finally:
            cursor.close()
-           print('Average price at postal code '+str(postalCode)+': '+str(priceavg))
-           print('Average size at postal code ' + str(postalCode) + ': ' + str(averageSize))
-           print('Average square meter price at postal code ' + str(postalCode) + ': ' + str(averageMeterPrice))
+           print('Report for statistics regarding the SRMI in '+townName)
+           print('')
+
+           print('Average price in '+townName+': '+str(priceavg))
+           print('Average size of properties in square meters: ' + str(averageSize))
+           print('Average square meter price in ' + townName + ': ' + str(averageMeterPrice))
+
+           return priceavg
+           return averageSize
+           return averageMeterPrice
 
 
 #Get the price of all the properties in the postal code area to make a distribution graph with it.
@@ -127,7 +174,6 @@ class avgPc:
                sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(postalCode)
                cursor.execute(sql)
                data = cursor.fetchall()
-               print(data)
                for p in data:
                    if p['postalCode'] is not None:
                       c = p['postalCode']
@@ -135,7 +181,6 @@ class avgPc:
 
                #Transform the list of postal codes in tuples so that the next SQL query is ready to work
                postalCodeList = tuple(postalCodeList)
-               print(postalCodeList)
 
                #Select from SQL the desired data
                sql = "SELECT {} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx, postalCodeList)
@@ -153,13 +198,17 @@ class avgPc:
                listy = [x for x in list if (x > mean -2*sd)]
                list = [x for x in listy if (x < mean + 2 * sd)]
 
+               # Get the city name to format a nice name of the string or Chart
+               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+
 
        finally:
            cursor.close()
+           print('Postal codes taken into account for the city of ' + townName + ': ' +str(postalCodeList))
 
            #Plot the prepared data
            plt.hist(list, color='#2d85cb', edgecolor='black', bins=int(180 / 5))
-           plt.title("Distribution of " + varx+ " at "+str(postalCode))
+           plt.title("Distribution of " + varx+ " in "+townName)
            plt.xlabel(varx)
            plt.ylabel("Number of properties for such "+varx)
            return (plt.show())
@@ -191,7 +240,6 @@ class avgPc:
                    if p['postalCode'] is not None:
                        c = p['postalCode']
                        postalCodeList.append(c)
-               print(postalCodeList)
 
                #Determine if there are one or many postal codes that are in the same city or the city targeted by the user has only 1 postal code attributed.
                if len(postalCodeList) is 1:
@@ -220,7 +268,6 @@ class avgPc:
                        lista.append(d)
                        e = p[varx3]
                        siza.append(e)
-               print(len(list))
 
                #Create the 2 list that we will fill with some extreme-values-filtered data so that our plots are representing the reality of the average market and not the extreme cases (that we want to exclude here from our data)
                axis1 = []
@@ -249,14 +296,18 @@ class avgPc:
                # axis1 is the first axis we define with the varx variable
                # axis2 is the first axis we define with the varx variable
                # size is the size of the data points in the graph
-               print(len(axis1))
+
+               # Get the city name to format a nice name of the string or Chart
+               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
 
        finally:
            cursor.close()
+           print('Postal codes taken into account for the city of ' + townName + ': ' + str(postalCodeList))
+           print('There are '+str(len(axis1))+' observations in '+townName)
 
            #Plot the prepared data
            plt.scatter(axis1, axis2, s=size, color='#2d85cb')
-           plt.suptitle(varx + " in relation to " + varx2+" at "+ str(postalCode))
+           plt.suptitle(varx + " in relation to " + varx2+" in "+ townName)
            plt.title("The size of the points is the number of "+str(varx3), fontsize= 9)
            plt.xlabel(varx)
            plt.ylabel(varx2)
@@ -292,8 +343,11 @@ class avgPc:
                        if p[x] is not None:
                            c = p[x]
                            axis2.append(c)
-               # Axis 1 being the name of the max temperatures for the postal code in the period of 1 year (12 values, 1 per month
-               #  Axis 2 being the name of the min temperatures for the postal code in the period of 1 year (12 values, 1 per month))
+               # Axis 1 being the name of the max temperatures for the postal code in the period of 1 year (12 values, 1 per month)
+               #  Axis 2 being the name of the min temperatures for the postal code in the period of 1 year (12 values, 1 per month)
+
+               # Get the city name to format a nice name of the string or Chart
+               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
 
        finally:
            cursor.close()
@@ -301,7 +355,7 @@ class avgPc:
            #Plot the prepared data
            plt.plot(axis1, label= 'Max temperatures', color= 'r')
            plt.plot(axis2, label= 'Min temperatures', color='#2d85cb')
-           plt.title('Yearly temperature per month at ' + str(postalCode))
+           plt.title('Yearly temperature per month in ' + townName)
            plt.xlabel('Month')
            plt.ylabel('Temperature in °C')
            plt.legend()
@@ -312,10 +366,13 @@ class avgPc:
 
 
 postalCodes = avgPc(DBOperations("kezenihi_srmidb3"))
-#postalCodes.distrib(1000, 'size')
+postalCodes.average(1000, 'price', 'size')
 
-#pc = postalCodes.price(9000, 'price', 'size')
-pc = postalCodes.priceMeter(1000)
+postalCodes.distrib(1000, 'price')
+postalCodes.priceMeter(1000)
+postalCodes.weather(1000)
+
+city(DBOperations("kezenihi_srmidb3")).cityName(1000)
 
 # --------------------------------------------------
 # In this section we create all the geographical map visualization that are necessary to satisfy our customers' needs.

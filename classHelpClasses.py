@@ -104,3 +104,23 @@ class postalCodes:
         finally:
             self.dbOperations.connection.commit()
             print("updateLastChecked SUCCESS")
+    
+    def getPostalCodesDict(self):
+        if self.dbOperations is None:
+            self.dbOperations = DBOperations().getDB()
+        self.dbOperations.getConnection()
+
+        try:
+            with DBOperations.connection.cursor() as cursor:
+                sql = "SELECT * FROM `postalCodes` ORDER BY postalCode ASC"
+                cursor.execute(sql)
+                codes = cursor.fetchall()
+                for code in codes:
+                    c = code["postalCode"]
+                    d = code["city"]
+                    d = unidecode.unidecode(d)
+                    postalcodedict.setdefault(d, []).append(c)
+
+        finally:
+            cursor.close()
+            print(postalcodedict)

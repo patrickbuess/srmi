@@ -2,45 +2,21 @@ from DBOperations import *
 import unidecode
 import requests
 from collections import OrderedDict
+from postalCodes import *
 
 postalcodedict = {}
 
-# simple function that returns a key for a given value from a dict
-def get_key(val):
-    for key, value in postalcodedict.items():
-         if val in value:
-             return key
-    return "key doesn't exist"
 
-class postalCodes:
+class weather:
     def __init__(self, dbOperations=None):
         self.dbOperations = dbOperations
-
-    # creates a dict with all cities and their postalcodes    
-    def getAllPostalCodes(self):
-        if self.dbOperations is None:
-            self.dbOperations = DBOperations().getDB()
-        self.dbOperations.getConnection()
-
-        try:
-            with DBOperations.connection.cursor() as cursor:
-                sql = "SELECT * FROM `postalCodes` ORDER BY postalCode ASC"
-                cursor.execute(sql)
-                codes = cursor.fetchall()
-                for code in codes:
-                    c = code["postalCode"]
-                    d = code["city"]
-                    d = unidecode.unidecode(d)
-                    postalcodedict.setdefault(d, []).append(c)
-
-        finally:
-            cursor.close()
-            print(postalcodedict)
-
-
-class insertData:
-    def __init__(self, dbOperations=None):
-        self.dbOperations = dbOperations
+   
+    # simple function that returns a key for a given value from a dict
+    def get_key(self, val):
+        for key, value in postalcodedict.items():
+             if val in value:
+                 return key
+        return "key doesn't exist"
 
     # this function interacts with the weather API and updates a single line according to the postalcode given
     def insertWeatherData(self, city, pcLocation):
@@ -96,7 +72,7 @@ class insertData:
                 print(ordered[keys[index]])
                 closest_pc = int(ordered[keys[index]][0])
                 print(closest_pc)
-                city = get_key(closest_pc)
+                city = weather.get_key(closest_pc)
                 print("Closest city: "+ city)
 
             # when the weather API does recognise the location in Switzerland, this part updates the database
@@ -137,17 +113,17 @@ class insertData:
             for code in codes:
                 city = code["city"]
                 pc = code["postalCode"]
-                insertData.insertWeatherData(city, pc)
+                weather.insertWeatherData(city, pc)
                 x += 1
                 print(x)
         cursor.close()
 
+postalCodes = postalCodes(DBOperations("kezenihi_srmidb3"))
+postalCodes.getPostalCodesDict()
 
-if __name__ == '__main__':
-    postalCodes = postalCodes(DBOperations("kezenihi_srmidb3"))
-    postalCodes.getAllPostalCodes()
+weather = weather(DBOperations("kezenihi_srmidb3"))
+weather.updatewholetable()
 
-    insertData = insertData(DBOperations("kezenihi_srmidb3"))
-    insertData.updatewholetable()
+
 
 

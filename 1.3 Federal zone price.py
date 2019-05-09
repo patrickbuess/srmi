@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import folium
 
-"""Communal Level: This file allows to draw some graphic conclusions about our data to give a visual overview of the Swiss rental market index
+"""Federal Level: This file allows to draw some graphic conclusions about our data to give a visual overview of the Swiss rental market index (SRMI)
 to our customers."""
 
 class DBOperations:
@@ -73,10 +73,11 @@ class DBOperations:
 #-------------------------------
 
 #Get the name of the city for each postal code (in order to then format charts and add dynamic titles to objects' output).
-class city:
+class federal:
     def __init__(self, dbOperations = None):
         self.dbOperations = dbOperations
-    def cityName(self, postalCode):
+
+    def federalName(self):
         if self.dbOperations is None:
             self.dbOperations = DBOperations.getDB()
         self.dbOperations.getConnection()
@@ -84,39 +85,31 @@ class city:
 
         try:
             with DBOperations.connection.cursor() as cursor:
-                sql = "SELECT city FROM `postalCodes` WHERE postalCode = {}".format(postalCode)
+                sql = "SELECT postalCode FROM `postalCodes`"
                 cursor.execute(sql)
                 list = cursor.fetchall()
-                cityName = [x['city'] for x in list if x['city'] is not None]
-
-                # Select from sql the list of postal codes that are from the same city of the one we would like to look at, because some big cities are divided in more postal codes while being the same city.
-                sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(
-                    postalCode)
-                cursor.execute(sql)
-                data = cursor.fetchall()
-                for p in data:
+                for p in list:
                     if p['postalCode'] is not None:
                         c = p['postalCode']
                         postalCodeList.append(c)
-                citydict= dict({'cityName':cityName ,'postalCodeList':postalCodeList})
+                postalCodeList = tuple(postalCodeList)
+
 
         finally:
-            return cityName[0]
             return postalCodeList
-            return citydict
         #cityName being the name of the city attached to the postal code entered
         #postalCodeList being the list of postal codes included in the same city as the city of the entered postal code.
         #citydict is a dictionary including both cityName and postalCodeList, in this order.
 
 # Get average price of the postal code entered
-class avgPc:
+class avgPcFederation:
    def __init__(self, dbOperations=None):
        self.dbOperations = dbOperations
 
 #Get the average numerical value for the price of properties in the postal code area entered by the customer
-   def average(self, postalCode, varx, varx2):
+   def averageFederation(self, varx, varx2):
        list = []
-       postalCode= postalCode
+       postalCodeList = federal(DBOperations("kezenihi_srmidb3")).federalName()
        varx = varx
        varx2= varx2
        if self.dbOperations is None:
@@ -124,26 +117,40 @@ class avgPc:
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx, postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx, postalCodeList)
                cursor.execute(sql)
                list = cursor.fetchall()
                list = [x[varx] for x in list if x[varx] is not None]
+
+               #Take away the most extreme elements of the data collected, with the help of standard deviations (sd)
+               elements = numpy.array(list)
+               mean = numpy.mean(elements, axis=0)
+               sd = numpy.std(elements, axis=0)
+               listy = [x for x in list if (x > mean - 2 * sd)]
+               list = [x for x in listy if (x < mean + 2 * sd)]
 
                #Calculate the variable average price for the zone
                priceavg = statistics.mean(list)
 
                #Calculate the variable 'average surface' (size) of the flats there in meter
-               sql = "SELECT {} FROM listingDetails WHERE postalCode = {}".format(varx2, postalCode)
+               sql = "SELECT {} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx2, postalCodeList)
                cursor.execute(sql)
                list = cursor.fetchall()
                list2 = [x[varx2] for x in list if x[varx2] is not None]
+
+               elements = numpy.array(list2)
+               mean = numpy.mean(elements, axis=0)
+               sd = numpy.std(elements, axis=0)
+               listy = [x for x in list2 if (x > mean - 2 * sd)]
+               list2 = [x for x in listy if (x < mean + 2 * sd)]
+
                averageSize = statistics.mean(list2)
 
                #Calculate the average price per square meter in the postal code chosen
                averageMeterPrice = priceavg/averageSize
 
                #Get the city name to format a nice name of the string or Chart
-               townName= city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+               townName= "Switzerland"
 
        finally:
            cursor.close()
@@ -160,27 +167,15 @@ class avgPc:
 
 
 #Get the price of all the properties in the postal code area to make a distribution graph with it.
-   def distrib(self, postalCode, varx):
+   def distribFederation(self, varx):
        list = []
-       postalCodeList = []
-       postalCode = postalCode
+       postalCodeList = federal(DBOperations("kezenihi_srmidb3")).federalName()
        varx= varx
        if self.dbOperations is None:
            self.dbOperations = DBOperations.getDB()
        self.dbOperations.getConnection()
        try:
            with DBOperations.connection.cursor() as cursor:
-               #Select from sql the list of postal codes that are from the same city of the one we would like to look at, because some big cities are divided in more postal codes while being the same city.
-               sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(postalCode)
-               cursor.execute(sql)
-               data = cursor.fetchall()
-               for p in data:
-                   if p['postalCode'] is not None:
-                      c = p['postalCode']
-                      postalCodeList.append(c)
-
-               #Transform the list of postal codes in tuples so that the next SQL query is ready to work
-               postalCodeList = tuple(postalCodeList)
 
                #Select from SQL the desired data
                sql = "SELECT {} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(varx, postalCodeList)
@@ -199,12 +194,12 @@ class avgPc:
                list = [x for x in listy if (x < mean + 2 * sd)]
 
                # Get the city name to format a nice name of the string or Chart
-               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+               townName = "Switzerland"
 
 
        finally:
            cursor.close()
-           print('Postal codes taken into account for the city of ' + townName + ': ' +str(postalCodeList))
+           print('Postal codes taken into account for ' + townName + ': all postal codes in CH')
 
            #Plot the prepared data
            plt.hist(list, color='#2d85cb', edgecolor='black', bins=int(180 / 5))
@@ -216,12 +211,11 @@ class avgPc:
            return len(list)
 
 # Get the price and size of the flat in a certain postal code and plot it in a two dimensional graph.
-   def priceMeter(self, postalCode):
+   def priceMeterFederation(self):
        list = []
        lista = []
        siza= []
-       postalCodeList = []
-       postalCode = postalCode
+       postalCodeList = federal(DBOperations("kezenihi_srmidb3")).federalName()
        varx = 'price'
        varx2= 'size'
        varx3= 'rooms'
@@ -231,33 +225,11 @@ class avgPc:
        #FIRST, collect the data from the varx (which can be defined as a variable for replicability of the code). This will correspond to one of the axis in our 2-dimensional chart.
        try:
            with DBOperations.connection.cursor() as cursor:
-               # Select from sql the list of postal codes that are from the same city of the one we would like to look at, because some big cities are divided in more postal codes while being the same city.
-               sql = "SELECT postalCode FROM `postalCodes` WHERE city IN (SELECT city FROM `postalCodes` WHERE postalCode = {})".format(
-                   postalCode)
+               #Select now from the Database the desired data
+               sql = "SELECT {},{},{} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
+                   varx, varx2, varx3, postalCodeList)
                cursor.execute(sql)
                data = cursor.fetchall()
-               for p in data:
-                   if p['postalCode'] is not None:
-                       c = p['postalCode']
-                       postalCodeList.append(c)
-
-               #Determine if there are one or many postal codes that are in the same city or the city targeted by the user has only 1 postal code attributed.
-               if len(postalCodeList) is 1:
-                   # Select now from the Database the desired data in the case there is only one postal code for the targeted city (because the SQL query syntax changes if there are one or many)
-                   postalCodeList = postalCode
-                   sql = "SELECT {},{},{} FROM listingDetails WHERE postalCode = {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, varx3, postalCodeList)
-                   cursor.execute(sql)
-                   data = cursor.fetchall()
-
-               else:
-                   #Select now from the Database the desired data
-                   # Transform the list of postal codes in tuples so that the next SQL query is ready to work
-                   postalCodeList = tuple(postalCodeList)
-                   sql = "SELECT {},{},{} FROM listingDetails WHERE postalCode IN {} AND category IN ('Apartment','Furnished apartment','Attic apartment','Maisonette','Loft','Penthouse','Terraced Apartment','Terraced condo')".format(
-                       varx, varx2, varx3, postalCodeList)
-                   cursor.execute(sql)
-                   data = cursor.fetchall()
 
                #Creating 2 lists which define the two axis of the chart
                for p in data:
@@ -298,11 +270,11 @@ class avgPc:
                # size is the size of the data points in the graph
 
                # Get the city name to format a nice name of the string or Chart
-               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+               townName ="Switzerland"
 
        finally:
            cursor.close()
-           print('Postal codes taken into account for the city of ' + townName + ': ' + str(postalCodeList))
+           print('Postal codes taken into account for ' + townName + ': all postal codes in CH')
            print('There are '+str(len(axis1))+' observations in '+townName)
 
            #Plot the prepared data
@@ -315,10 +287,10 @@ class avgPc:
            return (plt.show())
 
 
-   def weather(self,postalCode):
+   def weatherFederation(self):
        axis1 = []
        axis2 = []
-       postalCode = postalCode
+       postalCode = federal(DBOperations("kezenihi_srmidb3")).federalName()[1]
 
        #Define the columns that contains the data for each of the Max and Min temperatures in °C for the postal code entered by the customer.
        maxTemp = ['maxtempJan',  'maxtempFeb',  'maxtempMar',  'maxtempApr',  'maxtempMai', 'maxtempJun', 'maxtempJul', 'maxtempAug', 'maxtempSep', 'maxtempOct', 'maxtempNov', 'maxtempDec']
@@ -347,7 +319,7 @@ class avgPc:
                #  Axis 2 being the name of the min temperatures for the postal code in the period of 1 year (12 values, 1 per month)
 
                # Get the city name to format a nice name of the string or Chart
-               townName = city(DBOperations("kezenihi_srmidb3")).cityName(postalCode)
+               townName = "Switzerland"
 
        finally:
            cursor.close()
@@ -355,7 +327,7 @@ class avgPc:
            #Plot the prepared data
            plt.plot(axis1, label= 'Max temperatures', color= 'r')
            plt.plot(axis2, label= 'Min temperatures', color='#2d85cb')
-           plt.title('Yearly temperature per month in ' + townName)
+           plt.title('Yearly temperature per month in (! 1000 as default for ' + townName)
            plt.xlabel('Month')
            plt.ylabel('Temperature in °C')
            plt.legend()
@@ -365,15 +337,15 @@ class avgPc:
 
 
 
-postalCodes = avgPc(DBOperations("kezenihi_srmidb3"))
-postalCodes.average(1000, 'price', 'size')
+postalCodes = avgPcFederation(DBOperations("kezenihi_srmidb3"))
+postalCodes.averageFederation('price', 'size')
 
-postalCodes.distrib(1000, 'price')
-postalCodes.priceMeter(1000)
-postalCodes.weather(1000)
+postalCodes.distribFederation('price')
+postalCodes.priceMeterFederation()
+postalCodes.weatherFederation()
 
-city(DBOperations("kezenihi_srmidb3")).cityName(1000)
-
+#hello=federal(DBOperations("kezenihi_srmidb3")).federalName('Waadt')
+#print(hello)
 # --------------------------------------------------
 # In this section we create all the geographical map visualization that are necessary to satisfy our customers' needs.
 # For that, we use visuals of maps with colours.

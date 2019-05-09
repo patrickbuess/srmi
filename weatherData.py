@@ -6,16 +6,17 @@ from postalCodes import *
 
 postalcodedict = {}
 
-# simple function that returns a key for a given value from a dict
-def get_key(val):
-    for key, value in postalcodedict.items():
-         if val in value:
-             return key
-    return "key doesn't exist"
 
 class weather:
     def __init__(self, dbOperations=None):
         self.dbOperations = dbOperations
+   
+    # simple function that returns a key for a given value from a dict
+    def get_key(self, val):
+        for key, value in postalcodedict.items():
+             if val in value:
+                 return key
+        return "key doesn't exist"
 
     # this function interacts with the weather API and updates a single line according to the postalcode given
     def insertWeatherData(self, city, pcLocation):
@@ -71,7 +72,7 @@ class weather:
                 print(ordered[keys[index]])
                 closest_pc = int(ordered[keys[index]][0])
                 print(closest_pc)
-                city = get_key(closest_pc)
+                city = weather.get_key(closest_pc)
                 print("Closest city: "+ city)
 
             # when the weather API does recognise the location in Switzerland, this part updates the database

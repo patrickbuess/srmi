@@ -1,5 +1,4 @@
-from classDBOperations import *
-
+from scraper.classDBOperations import *
 
 class UrlList:
     def __init__(self, dbOperations=None):
@@ -12,7 +11,7 @@ class UrlList:
         self.dbOperations.getConnection()
         try:
             with DBOperations.connection.cursor() as cursor:
-                sql = "SELECT * FROM `listingURL`"
+                sql = "SELECT * FROM listingURL WHERE dateScraped > (CURDATE() - INTERVAL 6 MONTH)"  # WE ONLY COMPARE NEWLY SCRAPED URLS WITH URLS FROM THE LAST 6 MONTHS, AFTER THAT CHANCE IS SMALL THAT A LISTING IS STILL ONLINE
                 cursor.execute(sql)
                 urls = cursor.fetchall()
                 for url in urls:
@@ -23,6 +22,18 @@ class UrlList:
             cursor.close()
             return urlList
 
+    def markInProgress(self, mark, listingID):
+        if self.dbOperations is None:
+            self.dbOperations = DBOperations.getDB()
+        self.dbOperations.getConnection()
+        try:
+            with DBOperations.connection.cursor() as cursor:
+                sql = "UPDATE `listingURL` SET inProgress = {} WHERE listingID IN {}".format(mark, tuple(listingID))
+                cursor.execute(sql)
+        finally:
+            print("markInProgress SUCCESS")
+            self.dbOperations.connection.commit()
+
     def getUrlsID(self):
         urlList = []
         if self.dbOperations is None:
@@ -30,7 +41,7 @@ class UrlList:
         self.dbOperations.getConnection()
         try:
             with DBOperations.connection.cursor() as cursor:
-                sql = "SELECT * FROM `listingURL` WHERE checked = 0 LIMIT 10"
+                sql = "SELECT * FROM `listingURL` WHERE (checked = 0 AND inProgress = 0) LIMIT 1000"  # WE GET 1000 URLS PER ROUND, SO WE CAN RANDOMLY CHOOSE 10. THIS SHOULD REDUCE THE SITUATIONS WHERE 2 SCRAPERS WANT TO SCRAPE THE SAME URL AT THE SAME TIME.
                 cursor.execute(sql)
                 urls = cursor.fetchall()
                 for url in urls:
@@ -52,7 +63,7 @@ class UrlList:
             rows = urls
             values = ', '.join(map(str, rows))
             with DBOperations.connection.cursor() as cursor:
-                sql = "INSERT INTO `listingURL`(url, street, postalCode, checked, dateScraped) VALUES {}".format(values)
+                sql = "INSERT INTO `listingURL`(url, street, postalCode, checked, dateScraped, inProgress) VALUES {}".format(values)
                 cursor.execute(sql)
         finally:
             self.dbOperations.connection.commit()
@@ -104,7 +115,7 @@ class postalCodes:
         finally:
             self.dbOperations.connection.commit()
             print("updateLastChecked SUCCESS")
-    
+
     def getPostalCodesDict(self):
         if self.dbOperations is None:
             self.dbOperations = DBOperations().getDB()

@@ -1,5 +1,5 @@
 import requests
-from DBconnection import *
+from classes.DBOperations import *
 
 adresslat = ""
 adresslon = ""

@@ -1,5 +1,4 @@
-from classDBOperations import *
-
+from scraper.classDBOperations import *
 
 class listingObject:
     def __init__(self,

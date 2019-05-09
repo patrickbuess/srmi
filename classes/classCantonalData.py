@@ -114,7 +114,7 @@ class cantonalData:
         postalCodeList = cantonal(DBOperations("kezenihi_srmidb3")).cantonName(canton)
         if self.dbOperations is None:
             self.dbOperations = DBOperations.getDB()
-            self.dbOperations.getConnection()
+        self.dbOperations.getConnection()
         try:
             with DBOperations.connection.cursor() as cursor:
 

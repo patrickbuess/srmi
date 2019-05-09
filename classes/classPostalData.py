@@ -51,6 +51,7 @@ class postalCodeData:
 
                 # Calculate the average price per square meter in the postal code chosen
                 averageMeterPrice = priceavg / averageSize
+                resultsDict = {"avgPrice": priceavg, "avgSize": averageSize, "avgMeterPrice": averageMeterPrice}
 
         finally:
             cursor.close()
@@ -60,6 +61,8 @@ class postalCodeData:
                   + str(postalCode) + ': ' + str(averageSize))
             print('Average square meter price at postal code '
                   + str(postalCode) + ': ' + str(averageMeterPrice))
+            return(resultsDict)
+
 
     # Get the price of all the properties in the postal code area to make a distribution graph with it.
     def distrib(self, postalCode, varx):

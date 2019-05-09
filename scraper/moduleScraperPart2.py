@@ -100,7 +100,7 @@ def scraper2():
                             # CONVERT ADDRESS VIA GOOGLE GEOLOCATION API
                             print("RUN GEOLOCATION API")
                             api_key = "AIzaSyDLpLwScHEHrVpIQOVjSj0RaCOwrkuViNI"
-                            query = listing.address+", "+str(listing.postalCode)+", Switzerland"
+                            query = (listing.address+", "+str(listing.postalCode)+", Switzerland").replace(" ","+")
                             try:
                                 googleurl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + query + '&lang=de&key=' + api_key
                                 result = requests.get(googleurl)

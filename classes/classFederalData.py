@@ -74,7 +74,7 @@ class federalData:
         list = []
         if self.dbOperations is None:
             self.dbOperations = DBOperations.getDB()
-            self.dbOperations.getConnection()
+        self.dbOperations.getConnection()
         try:
             with DBOperations.connection.cursor() as cursor:
 

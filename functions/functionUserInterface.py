@@ -5,6 +5,7 @@ from classes.classFederalData import federalData
 from classes.classDBOperations import DBOperations
 from scraper.moduleScraperPart1 import scraper1
 from scraper.moduleScraperPart2 import scraper2
+from functions.babyScraper import babyScraper
 import subprocess
 import traceback
 
@@ -13,13 +14,13 @@ def userInterface():
     while True:
         print("____________________________________________________\n")
         print("Path: Home\n")
-        menu_items = ["[1] Federal", "[2] Cantonal", "[3] Communal", "[4] Comparis Webscraper", "[99] Exit\n"]
+        menu_items = ["[1] Federal", "[2] Cantonal", "[3] Communal", "[4] Compare listing", "[5] Comparis Webscraper", "[99] Exit\n"]
         print("Type in number to navigate")
         print(*menu_items, sep='\n')
-        choice = int(input('Choice: '))
+        choiceGL = int(input('Choice: '))
 
         # FEDERAL
-        if (choice == 1):
+        if (choiceGL == 1):
             while True:
                 print("____________________________________________________\n")
                 print("Path: Home/Federal\n")
@@ -45,12 +46,14 @@ def userInterface():
                     if (choice == 1):
                         menu_items = ["[1] Price", "[2] Size", "[3] Rooms", "[99] Exit\n"]
                         print(*menu_items, sep='\n')
-                        choice = int(input('Choose variable to be plotted: '))
+                        choiceHG = int(input('Choose variable to be plotted: '))
                         choices = ["price", "size", "rooms", "age"]
                         try:
-                            federalObject.distribFederal(choices[choice-1])
-                        except:
+                            federalObject.distribFederal(choices[choiceHG-1])
+                        except Exception as e:
                             print("There was an error, please make sure that postal code exists. \n")
+                            print(traceback.format_exc())
+                            print(e)
                     # SCATTER PLOT
                     if (choice == 2):
                         menu_items = ["[1] Price", "[2] Size", "[3] Rooms", "[99] Exit\n"]
@@ -76,7 +79,7 @@ def userInterface():
                             print(e)
 
         # CANTONAL
-        if (choice == 2):
+        if (choiceGL == 2):
             while True:
                 print("____________________________________________________\n")
                 print("Path: Home/Cantonal\n")
@@ -102,10 +105,10 @@ def userInterface():
                     if (choice == 1):
                         menu_items = ["[1] Price", "[2] Size", "[3] Rooms", "[99] Exit\n"]
                         print(*menu_items, sep='\n')
-                        choice = int(input('Choose variable to be plotted: '))
+                        choiceHG = int(input('Choose variable to be plotted: '))
                         choices = ["price", "size", "rooms", "age"]
                         try:
-                            cantonObject.distribCanton(canton, choices[choice-1])
+                            cantonObject.distribCanton(canton, choices[choiceHG-1])
                         except:
                             print("There was an error, please make sure that postal code exists. \n")
                     # SCATTER PLOT
@@ -133,7 +136,7 @@ def userInterface():
                             print(e)
 
         # COMMUNAL
-        if (choice == 3):
+        if (choiceGL == 3):
             while True:
                 print("____________________________________________________\n")
                 print("Path: Home/Communal\n")
@@ -158,10 +161,10 @@ def userInterface():
                     if (choice == 1):
                         menu_items = ["[1] Price", "[2] Size", "[3] Rooms", "[99] Exit\n"]
                         print(*menu_items, sep='\n')
-                        choice = int(input('Choose variable to be plotted: '))
+                        choiceHG = int(input('Choose variable to be plotted: '))
                         choices = ["price", "size", "rooms", "age"]
                         try:
-                            postalObject.distrib(postal, choices[choice-1])
+                            postalObject.distrib(postal, choices[choiceHG-1])
                         except:
                             print("There was an error, please make sure that postal code exists. \n")
                     # SCATTER PLOT
@@ -191,8 +194,20 @@ def userInterface():
                         except:
                             print("There was an error, please make sure that postal code exists. \n")
 
+        # COMPARE LISTING
+        if (choiceGL == 4):
+            print("____________________________________________________\n")
+            print("Path: Home/Compare Listing\n")
+            url = input('Enter a comparis Listing URL to compare: ')
+            try:
+                babyScraper(url)
+            except Exception as e:
+                print("There was an error, please make sure that postal code exists. \n")
+                print(traceback.format_exc())
+                print(e)
+
         # RUN SCRAPER
-        if (choice == 4):
+        if (choiceGL == 5):
             print("____________________________________________________\n")
             print("Path: Home/Comparis Webscraper\n")
             menu_items = ["[0] Go Back", "[1] Scrape New URLS", "[2] Scrape New Listings from URLS", "[99] Exit\n"]

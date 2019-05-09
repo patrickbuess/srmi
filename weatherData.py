@@ -2,6 +2,7 @@ from DBOperations import *
 import unidecode
 import requests
 from collections import OrderedDict
+from postalCodes import *
 
 postalcodedict = {}
 
@@ -12,33 +13,7 @@ def get_key(val):
              return key
     return "key doesn't exist"
 
-class postalCodes:
-    def __init__(self, dbOperations=None):
-        self.dbOperations = dbOperations
-
-    # creates a dict with all cities and their postalcodes    
-    def getAllPostalCodes(self):
-        if self.dbOperations is None:
-            self.dbOperations = DBOperations().getDB()
-        self.dbOperations.getConnection()
-
-        try:
-            with DBOperations.connection.cursor() as cursor:
-                sql = "SELECT * FROM `postalCodes` ORDER BY postalCode ASC"
-                cursor.execute(sql)
-                codes = cursor.fetchall()
-                for code in codes:
-                    c = code["postalCode"]
-                    d = code["city"]
-                    d = unidecode.unidecode(d)
-                    postalcodedict.setdefault(d, []).append(c)
-
-        finally:
-            cursor.close()
-            print(postalcodedict)
-
-
-class insertData:
+class weather:
     def __init__(self, dbOperations=None):
         self.dbOperations = dbOperations
 
@@ -137,17 +112,17 @@ class insertData:
             for code in codes:
                 city = code["city"]
                 pc = code["postalCode"]
-                insertData.insertWeatherData(city, pc)
+                weather.insertWeatherData(city, pc)
                 x += 1
                 print(x)
         cursor.close()
 
+postalCodes = postalCodes(DBOperations("kezenihi_srmidb3"))
+postalCodes.getPostalCodesDict()
 
-if __name__ == '__main__':
-    postalCodes = postalCodes(DBOperations("kezenihi_srmidb3"))
-    postalCodes.getAllPostalCodes()
+weather = weather(DBOperations("kezenihi_srmidb3"))
+weather.updatewholetable()
 
-    insertData = insertData(DBOperations("kezenihi_srmidb3"))
-    insertData.updatewholetable()
+
 
 

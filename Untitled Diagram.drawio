@@ -1,9 +1,156 @@
-<mxfile host="app.diagrams.net" modified="2020-07-26T21:14:02.437Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15" etag="GlW0fYfsu35wUKVml1xP" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-26T21:55:56.881Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15" etag="9veABHNN3BN8P35laYa3" version="13.5.3" type="github">
   <diagram id="CGHBSl6JHN9laQSk0yyP" name="Page-1">
-    <mxGraphModel dx="1892" dy="1278" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="1577" dy="1065" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="bWf-uFg3usbX_e_Ide47-20" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="130" y="265" width="610" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-28" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="470" y="280" width="250" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-26" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="150" y="280" width="300" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-25" target="bWf-uFg3usbX_e_Ide47-38">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1185" y="340" />
+              <mxPoint x="1060" y="340" />
+              <mxPoint x="1060" y="349" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-25" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="880" y="270" width="610" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-9" value="Source&lt;br&gt;VueJS &lt;br&gt;based (?)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="595" width="100" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-1" value="style.scss" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="781" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-2" value="app.js" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="698" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-4" value="index.html" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="615" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-6" value="Webpack/Babel" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="445" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-7" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-9" target="bWf-uFg3usbX_e_Ide47-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="645" as="sourcePoint" />
+            <mxPoint x="650" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-10" value="Distribution" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="295" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-14" value="" style="endArrow=classic;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-6" target="bWf-uFg3usbX_e_Ide47-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="605" as="sourcePoint" />
+            <mxPoint x="355" y="525" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-15" value="Build" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bWf-uFg3usbX_e_Ide47-14">
+          <mxGeometry x="-0.2346" y="3" relative="1" as="geometry">
+            <mxPoint x="-11.18" y="-11.84" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-16" target="bWf-uFg3usbX_e_Ide47-43">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-48" value="Authenticate/Call API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bWf-uFg3usbX_e_Ide47-47">
+          <mxGeometry x="-0.3026" y="43" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-16" value="Server" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="295" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-17" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-10" target="bWf-uFg3usbX_e_Ide47-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="355" y="465" as="sourcePoint" />
+            <mxPoint x="245" y="385" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-18" value="Deploy" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bWf-uFg3usbX_e_Ide47-17">
+          <mxGeometry x="-0.2346" y="3" relative="1" as="geometry">
+            <mxPoint x="28.33" y="3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-21" value="&lt;font style=&quot;font-size: 18px&quot;&gt;Frontend&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="630" y="831" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-24" value="&lt;font style=&quot;font-size: 18px&quot;&gt;Backend&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="910" y="840" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-27" value="&lt;font style=&quot;font-size: 18px&quot;&gt;Dev&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="530" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-29" value="&lt;font style=&quot;font-size: 18px&quot;&gt;Prod&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="630" y="430" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-32" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="295" width="330" height="585" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-33" value="&lt;font style=&quot;font-size: 18px&quot;&gt;Django&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="831" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-34" value="Ricardo &lt;br&gt;App" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="312" width="100" height="328" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-36" target="bWf-uFg3usbX_e_Ide47-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-40" value="Define" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bWf-uFg3usbX_e_Ide47-37">
+          <mxGeometry x="-0.0124" y="-2" relative="1" as="geometry">
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-36" value="models.py" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="324" width="100" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-46" value="POST/UPDATE/DELETE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;startArrow=block;startFill=1;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-38" target="bWf-uFg3usbX_e_Ide47-43">
+          <mxGeometry x="-0.0839" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-38" value="Ricardo Database" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="318" width="170" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-41" target="bWf-uFg3usbX_e_Ide47-43">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-45" value="Define &lt;br&gt;Calls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bWf-uFg3usbX_e_Ide47-44">
+          <mxGeometry x="-0.3787" y="34" relative="1" as="geometry">
+            <mxPoint x="-31" y="4.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-41" value="views.py" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="403" width="100" height="67" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-53" value="Route" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;startFill=0;" edge="1" parent="1" source="bWf-uFg3usbX_e_Ide47-42" target="bWf-uFg3usbX_e_Ide47-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-42" value="urls.py" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="540" width="100" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-43" value="REST API" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="517" width="170" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-50" value="Django &lt;br&gt;Project" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="660" width="100" height="191" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-51" value="urls.py" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="670" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bWf-uFg3usbX_e_Ide47-52" value="settings.py" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="720" width="100" height="40" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
